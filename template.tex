@@ -1,0 +1,133 @@
+\documentclass[
+	a4paper,
+	12pt,
+	version=last,
+	fromalign=right,
+%	foldmarks=p, % keine mittlere Faltmarke
+	foldmarks=off,
+	enlargefirstpage,
+	fromemail,
+	fromphone,
+	fromcity,
+	fromlogo,
+	fromrule,
+	backaddress,
+]{scrlttr2}
+\usepackage[utf8]{inputenc}
+\BLOCK{if invoice.locale =="de"}
+\usepackage[ngerman]{babel}
+\BLOCK{else}
+\usepackage[english]{babel}
+\BLOCK{endif}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{mathpazo}
+\usepackage[left]{eurosym}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{tabularx}
+
+\usepackage{color}
+\definecolor{LightGray}{rgb}{0.7,0.7,0.7}
+\definecolor{Gray}{rgb}{0.5,0.5,0.5}
+\setkomafont{fromrule}{\color{LightGray}}
+\setkomafont{fromaddress}{\sffamily} % Sans Serif
+\setkomafont{fromname}{\sffamily\bfseries} % and bold
+\setkomafont{pagefoot}{\sffamily\bfseries}
+
+\usepackage{graphicx}
+
+\newcommand{\separ}{~\textperiodcentered~}
+
+\hyphenpenalty=10000
+
+\newcommand{\VAR}[1]{\LaTeX} % Just a placeholder (will never be used)
+
+\newcommand{\BLOCK}[1]{\LaTeX} % Just a placeholder (will never be used)
+
+\newcommand{\Name}{\VAR{from.name}}
+\setkomavar{fromname}{\Name}
+\newcommand{\Address}{\VAR{from.address}}
+\newcommand{\ZIP}{\VAR{from.zip}}
+\newcommand{\City}{\VAR{from.city}}
+\newcommand{\CityShort}{\VAR{from.cityShort}}
+
+\setkomavar{fromaddress}{\Address\\\ZIP~\City
+    \BLOCK{if to.country!="Austria"}\\\VAR{from.country}\BLOCK{endif}}
+\setkomavar{fromphone}[]{\VAR{from.phone}}
+\setkomavar{fromemail}[]{\VAR{from.email}}
+\setkomavar{fromurl}[]{\VAR{from.url}}
+%\setkomavar{fromlogo}{\includegraphics[height=3.2cm]{template/header.jpg}}
+
+
+\setkomavar{frombank}{Sparkasse Krems\separ IBAN: \VAR{from.IBAN}\separ BIC: \VAR{from.BIC}}
+%TODO: Linie über
+\setkomavar{firstfoot}{\centering\color{Gray}\scriptsize\Name\separ\Address\separ\ZIP~\City\\
+\usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank}}
+
+\setkomavar{invoice}{\VAR{invoice_id}}
+\setkomavar{date}{\VAR{invoice_date}}
+
+\pdfinfo{
+   /Author (\Name)
+   /Title  (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
+   /Subject (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
+   /Keywords (\VAR{"invoice" |t})
+}
+
+\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\CityShort}
+
+% Begin document
+\begin{document}
+\begin{letter}{\VAR{to.name} \\ \VAR{to.address} \\ \VAR{to.plz}~\VAR{to.ort}
+		\BLOCK{if to.country!="Austria"}\\\VAR{to.country}\BLOCK{endif}}
+\setkomavar{title}{\VAR{invoice.title}}
+\opening{}
+
+\BLOCK{if invoice.mode=="single"}
+\begin{tabular}{ll}
+	\VAR{"descr"|t}:& \VAR{invoice.description} \\
+	\VAR{"period"|t}: & \VAR{invoice.timerange} \\
+	\VAR{"total"|t}: & \EUR{\VAR{invoice.price | formatdigit }} \\
+	
+	\vspace{0.5cm}
+	
+\end{tabular}
+\BLOCK{elif invoice.mode=="hourly"}
+
+\vspace{0.5cm}
+\begin{tabularx}{\textwidth}{Xrrr}
+	\VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
+	
+	\VAR{invoice.description} &
+	\EUR{\VAR{invoice.per_hour | formatdigit }} &
+	\VAR{invoice.hours} &
+	\EUR{\VAR{invoice.total | formatdigit }} \\
+	
+	
+	
+	\midrule %\cmidrule{4-4}
+
+	
+	& & & \EUR{\VAR{invoice.total | formatdigit }} \\
+\end{tabularx}
+
+\BLOCK{endif}
+
+\vspace{0.5cm}
+\noindent \VAR{"taxexception"|t}
+
+\vspace{0.5cm}
+\noindent \VAR{"transfer"|t}:
+
+\vspace{0.5cm}
+
+\begin{tabular}{@{}ll}
+	Bank: &\VAR{from.bank}\\
+	IBAN:& \VAR{from.IBAN}\\
+	BIC:& \VAR{from.BIC}
+\end{tabular}
+
+
+\end{letter}
+\end{document}

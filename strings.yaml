@@ -1,0 +1,24 @@
+invoice:
+  de: Rechnung
+  en: Invoice
+descr:
+  de: Beschreibung
+  en: Description
+period:
+  de: Leistungszeitraum
+  en: Period
+total:
+  de: Gesamtpreis
+  en: Total
+per_hour:
+  de: Stundensatz
+  en: Hourly Rate
+hours:
+  de: Stunden
+  en: Hours
+taxexception:
+  de: Umsatzsteuerfrei aufgrund der Kleinunternehmerregelung gemäß §6(1)27 UStG
+  en: VAT-exempt because of small-business regulation (§6(1)27 UStG)
+transfer:
+  de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Tage auf folgendes Konto zu überweisen
+  en: Please transfer the due invoice amount to the following account
