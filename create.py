@@ -41,6 +41,9 @@ def create_invoice():
 
 def compile_invoice(id):
     directory = invoice_dir + "/" + str(id)
+    if os.path.exists(directory + "/locked"):
+        print("The invoice has already been locked")
+        exit()
     invoice = load_yaml(directory + "/data.yaml")
     env = jinja2.Environment(
         block_start_string='\BLOCK{',
@@ -85,7 +88,8 @@ def compile_invoice(id):
         template = env.get_template('template.tex')
         fh.write(template.render(section1='Long Form', section2='Short Form', **data))
     os.chdir(directory)
-    subprocess.check_call(['pdflatex', '{name}.tex'.format(name=translate("invoice"))])
+    for _ in range(2):
+        subprocess.check_call(['pdflatex', '{name}.tex'.format(name=translate("invoice"))])
     print(directory)
     remove_tmp_files(translate("invoice"))
 
