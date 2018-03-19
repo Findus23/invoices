@@ -18,8 +18,7 @@ def create_invoice():
         "date": ask("date", "date", default="today"),
         "mode": ask("Mode", "set", set=["single", "hourly"], default="hourly"),
         "description": ask("description"),
-        "start": ask("from", "date"),
-        "end": ask("to", "date"),
+        "range": ask("range"),
     }
     if invoice["mode"] == "single":
         single = {
@@ -29,11 +28,16 @@ def create_invoice():
     elif invoice["mode"] == "hourly":
         hourly = {
             "hours": ask("hours", "int"),
+            "minutes": ask("hours", "int"),
             "per_hour": ask("per hour", "money", default=config["default_hourly_rate"])
         }
         invoice.update(hourly)
     directory = invoice_dir + "/" + str(invoice["id"])
-    os.mkdir(directory)
+    if os.path.exists(directory):
+        if not ask("overwrite", "boolean"):
+            exit()
+    else:
+        os.mkdir(directory)
     print(invoice)
     save_yaml(invoice, directory + "/data.yaml")
     save_yaml(config, "config.yaml")
@@ -106,7 +110,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "compile":
         if len(sys.argv) == 3:
             try:
-                invoice_id = int(sys.argv[1])
+                invoice_id = int(sys.argv[2])
             except ValueError:
                 invoice_id = False
                 print("invalid id")

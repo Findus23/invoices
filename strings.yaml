@@ -20,5 +20,9 @@ taxexception:
   de: Umsatzsteuerfrei aufgrund der Kleinunternehmerregelung gemäß §6(1)27 UStG
   en: VAT-exempt because of small-business regulation (§6(1)27 UStG)
 transfer:
-  de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Tage auf folgendes Konto zu überweisen
+  de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Werktage auf folgendes Konto zu überweisen
   en: Please transfer the due invoice amount to the following account
+
+range:
+  de: Leistungszeitraum
+  en: period

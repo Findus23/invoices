@@ -57,4 +57,11 @@ def ask(question, validator=None, default=None, set=None):
             if answer not in set:
                 print("only [{formats}] are allowed".format(formats=", ".join(set)))
                 continue
+        if validator == "boolean":
+            if answer.lower() in ['true', '1', 't', 'y', 'yes']:
+                return True
+            elif answer.lower() in ["false", "0", "f", "n", "no"]:
+                return False
+            else:
+                continue
         return answer
