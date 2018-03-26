@@ -66,7 +66,7 @@
 \usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank}}
 
 \setkomavar{invoice}{\VAR{invoice.id}}
-\setkomavar{date}{\VAR{invoice.date}}
+\setkomavar{date}{\VAR{invoice.date|formatdate}}
 \newkomavar*[\VAR{"range"|t}]{range}
 \setkomavar{range}{\VAR{invoice.range}}
 
@@ -90,7 +90,7 @@
 \BLOCK{if invoice.mode=="single"}
 \begin{tabular}{ll}
 	\VAR{"descr"|t}:& \VAR{invoice.description} \\
-	\VAR{"period"|t}: & \VAR{invoice.timerange} \\
+	\VAR{"period"|t}: & \VAR{invoice.range} \\
 	\VAR{"total"|t}: & \EUR{\VAR{invoice.price | formatdigit }} \\
 	
 	\vspace{0.5cm}

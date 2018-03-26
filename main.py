@@ -86,7 +86,18 @@ def compile_invoice(id):
             string = string.replace(".", ",")
         return string
 
+    def format_date(date):
+        """
+
+        :type date: datetime.datetime
+        """
+        if invoice["locale"] == "de":
+            return date.strftime("%d. %m. %Y")
+        else:
+            return date.strftime("%Y-%m-%d")
+
     env.filters['formatdigit'] = format_digit
+    env.filters['formatdate'] = format_date
     env.filters['t'] = translate
     with open(directory + "/{name}.tex".format(name=translate("invoice")), "w") as fh:
         template = env.get_template('template.tex')
@@ -98,16 +109,42 @@ def compile_invoice(id):
     remove_tmp_files(translate("invoice"))
 
 
+def sign_invoice(id):
+    directory = invoice_dir + "/" + str(id)
+    if os.path.exists(directory + "/locked"):
+        print("The invoice has already been locked")
+        exit()
+    if os.path.exists(directory + "/Rechnung.pdf"):
+        name = "Rechnung"
+    elif os.path.exists(directory + "/Invoice.pdf"):
+        name = "Invoice"
+    else:
+        print("Invoice not found")
+        name = ""
+        exit()
+    subprocess.check_call([
+        "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java",  # force java8
+        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.16.jar",
+        "-i", "{dir}/{name}.pdf".format(dir=directory, name=name),
+        "-o", "{dir}/{name}_{signed}.pdf".format(
+            dir=directory, name=name, signed=("signiert" if name == "Rechnung" else "signed")
+        ),
+        "-b", "LOCAL",  # use local Bürgerkarte
+        "-a",  # automatically position signature
+        "-s"  # save without asking
+    ])
+
+
 if __name__ == "__main__":
-    if len(sys.argv) == 1 or len(sys.argv) > 3 or sys.argv[1] not in ["create", "compile"]:
-        print("please use 'create' or 'compile'")
+    if len(sys.argv) == 1 or len(sys.argv) > 3 or sys.argv[1] not in ["create", "compile", "sign"]:
+        print("please use 'create', 'compile' or 'sign'")
         exit()
     config = load_yaml("config.yaml")
     invoice_dir = config["invoice_dir"]
 
     if sys.argv[1] == "create":
         create_invoice()
-    if sys.argv[1] == "compile":
+    if sys.argv[1] == "compile" or sys.argv[1] == "sign":
         if len(sys.argv) == 3:
             try:
                 invoice_id = int(sys.argv[2])
@@ -117,4 +154,7 @@ if __name__ == "__main__":
                 exit()
         else:
             invoice_id = config["last_id"]
-        compile_invoice(invoice_id)
+        if sys.argv[1] == "compile":
+            compile_invoice(invoice_id)
+        else:
+            sign_invoice(invoice_id)
