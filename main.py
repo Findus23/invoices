@@ -63,7 +63,7 @@ def compile_invoice(id):
         loader=jinja2.FileSystemLoader(os.path.abspath('.'))
     )
     if invoice["mode"] == "hourly":
-        invoice["total"] = invoice["per_hour"] * invoice["hours"]
+        invoice["total"] = invoice["per_hour"] * (invoice["hours"] + invoice["minutes"] / 60)
     data = {
         "from": load_yaml("from.yaml"),
         "to": load_yaml("recipients/{id}.yaml".format(id=invoice["recipient"])),
@@ -131,6 +131,7 @@ def sign_invoice(id):
         ),
         "-b", "LOCAL",  # use local Bürgerkarte
         "-a",  # automatically position signature
+        "-v", "true" if name == "Rechnung" else "false",
         "-s"  # save without asking
     ])
 
