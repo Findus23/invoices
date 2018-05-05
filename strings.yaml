@@ -22,7 +22,9 @@ taxexception:
 transfer:
   de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Werktage auf folgendes Konto zu überweisen
   en: Please transfer the due invoice amount to the following account
-
 range:
   de: Leistungszeitraum
   en: period
+bank_fee:
+  de: Überweisungsgebühr
+  en: Bank Fees

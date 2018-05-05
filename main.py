@@ -14,7 +14,7 @@ def create_invoice():
         "locale": ask("locale", "set", set=["de", "en"], default="de"),
         "id": ask("id", "int", default=current_id),
         "title": ask("title"),
-        "recipient": ask("recipient", "set", set=get_possible_recipents(), default="innocraft"),
+        "recipient": ask("recipient", "set", set=get_possible_recipents(), default=config["default_recipient"]),
         "date": ask("date", "date", default="today"),
         "mode": ask("Mode", "set", set=["single", "hourly"], default="hourly"),
         "description": ask("description"),
@@ -32,6 +32,7 @@ def create_invoice():
             "per_hour": ask("per hour", "money", default=config["default_hourly_rate"])
         }
         invoice.update(hourly)
+    invoice["bank_fee"] = ask("bank_fee", "boolean")
     directory = invoice_dir + "/" + str(invoice["id"])
     if os.path.exists(directory):
         if not ask("overwrite", "boolean"):
@@ -63,11 +64,13 @@ def compile_invoice(id):
         loader=jinja2.FileSystemLoader(os.path.abspath('.'))
     )
     if invoice["mode"] == "hourly":
-        invoice["total"] = invoice["per_hour"] * (invoice["hours"] + invoice["minutes"] / 60)
+        invoice["hourtotal"] = invoice["per_hour"] * (invoice["hours"] + invoice["minutes"] / 60)
+        invoice["total"] = invoice["hourtotal"] + config["bank_fee"]
     data = {
         "from": load_yaml("from.yaml"),
         "to": load_yaml("recipients/{id}.yaml".format(id=invoice["recipient"])),
-        "invoice": invoice
+        "invoice": invoice,
+        "config": config
     }
 
     strings = load_yaml("strings.yaml")
