@@ -32,7 +32,7 @@ def create_invoice():
             "per_hour": ask("per hour", "money", default=config["default_hourly_rate"])
         }
         invoice.update(hourly)
-    invoice["bank_fee"] = ask("bank_fee", "boolean")
+    invoice["bank_fee"] = ask("bank_fee", "boolean", default=False)
     directory = invoice_dir + "/" + str(invoice["id"])
     if os.path.exists(directory):
         if not ask("overwrite", "boolean"):
