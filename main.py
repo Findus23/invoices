@@ -126,8 +126,8 @@ def sign_invoice(id):
         name = ""
         exit()
     subprocess.check_call([
-        "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java",  # force java8
-        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.16.jar",
+        "java",
+        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.17.jar",
         "-i", "{dir}/{name}.pdf".format(dir=directory, name=name),
         "-o", "{dir}/{name}_{signed}.pdf".format(
             dir=directory, name=name, signed=("signiert" if name == "Rechnung" else "signed")
