@@ -105,7 +105,7 @@
 	\VAR{invoice.description} &
 	\EUR{\VAR{invoice.per_hour | formatdigit }} &
 	\VAR{invoice.hours}:\VAR{invoice.minutes} &
-	\EUR{\VAR{invoice.hourtotal | formatdigit }} \\
+	\EUR{\VAR{invoice.hourtotal() | formatdigit }} \\
 	
 	\BLOCK{if invoice.bank_fee}
 	    \VAR{"bank_fee"|t} & & & \EUR{\VAR{config.bank_fee| formatdigit}} \\
@@ -115,7 +115,7 @@
 	\midrule %\cmidrule{4-4}
 
 	
-	& & & \EUR{\VAR{invoice.total | formatdigit }} \\
+	& & & \EUR{\VAR{invoice.total() | formatdigit }} \\
 \end{tabularx}
 
 \BLOCK{endif}

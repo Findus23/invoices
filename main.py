@@ -3,44 +3,43 @@ import sys
 
 import jinja2
 
+from invoice import SingleInvoice, HourlyInvoice, Invoice
 from utils import *
 
 
 def create_invoice():
     current_id = config["last_id"]
+    mode = ask("Mode", "set", set=["single", "hourly"], default="hourly")
+    if mode == "single":
+        invoice = SingleInvoice()
+    elif mode == "hourly":
+        invoice = HourlyInvoice()
+    else:
+        invoice = Invoice()
     current_id += 1
     config["last_id"] = current_id
-    invoice = {
-        "locale": ask("locale", "set", set=["de", "en"], default="de"),
-        "id": ask("id", "int", default=current_id),
-        "title": ask("title"),
-        "recipient": ask("recipient", "set", set=get_possible_recipents(), default=config["default_recipient"]),
-        "date": ask("date", "date", default="today"),
-        "mode": ask("Mode", "set", set=["single", "hourly"], default="hourly"),
-        "description": ask("description"),
-        "range": ask("range"),
-    }
-    if invoice["mode"] == "single":
-        single = {
-            "price": ask("price", "money")
-        }
-        invoice.update(single)
-    elif invoice["mode"] == "hourly":
-        hourly = {
-            "hours": ask("hours", "int"),
-            "minutes": ask("hours", "int"),
-            "per_hour": ask("per hour", "money", default=config["default_hourly_rate"])
-        }
-        invoice.update(hourly)
-    invoice["bank_fee"] = ask("bank_fee", "boolean", default=False)
-    directory = invoice_dir + "/" + str(invoice["id"])
+    invoice.locale = ask("locale", "set", set=["de", "en"], default="de")
+    invoice.id = ask("id", "int", default=current_id)
+    invoice.title = ask("title")
+    invoice.recipient = ask("recipient", "set", set=get_possible_recipents(), default=config["default_recipient"])
+    invoice.date = ask("date", "date", default="today")
+    invoice.description = ask("description")
+    invoice.range = ask("range")
+
+    if invoice.mode == "single":
+        invoice.price = ask("price", "money")
+
+    elif invoice.mode == "hourly":
+        invoice.hours = ask("hours", "int")
+        invoice.minutes = ask("minutes", "int")
+        invoice.per_hour = ask("per hour", "money", default=config["default_hourly_rate"])
+    directory = invoice_dir + "/" + str(invoice.id)
     if os.path.exists(directory):
         if not ask("overwrite", "boolean"):
             exit()
     else:
         os.mkdir(directory)
-    print(invoice)
-    save_yaml(invoice, directory + "/data.yaml")
+    save_yaml(vars(invoice), directory + "/data.yaml")
     save_yaml(config, "config.yaml")
 
 
@@ -49,7 +48,15 @@ def compile_invoice(id):
     if os.path.exists(directory + "/locked"):
         print("The invoice has already been locked")
         exit()
-    invoice = load_yaml(directory + "/data.yaml")
+    invoicedata = load_yaml(directory + "/data.yaml")
+    mode = invoicedata["mode"]
+    del invoicedata["mode"]
+    if mode == "single":
+        invoice = SingleInvoice(**invoicedata)
+    elif mode == "hourly":
+        invoice = HourlyInvoice(**invoicedata)
+    else:
+        invoice = Invoice(**invoicedata)
     env = jinja2.Environment(
         block_start_string='\BLOCK{',
         block_end_string='}',
@@ -63,12 +70,9 @@ def compile_invoice(id):
         autoescape=False,
         loader=jinja2.FileSystemLoader(os.path.abspath('.'))
     )
-    if invoice["mode"] == "hourly":
-        invoice["hourtotal"] = invoice["per_hour"] * (invoice["hours"] + invoice["minutes"] / 60)
-        invoice["total"] = invoice["hourtotal"] + config["bank_fee"]
     data = {
         "from": load_yaml("from.yaml"),
-        "to": load_yaml("recipients/{id}.yaml".format(id=invoice["recipient"])),
+        "to": load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)),
         "invoice": invoice,
         "config": config
     }
@@ -77,7 +81,7 @@ def compile_invoice(id):
 
     def translate(key):
         if key in strings:
-            return strings[key][invoice["locale"]]
+            return strings[key][invoice.locale]
         else:
             print("Translation key for '{key}' is missing".format(key=key))
             exit()
@@ -85,7 +89,7 @@ def compile_invoice(id):
     def format_digit(integer):
         integer = integer / 100
         string = "{0:.2f}".format(integer)
-        if invoice["locale"] == "de":
+        if invoice.locale == "de":
             string = string.replace(".", ",")
         return string
 
@@ -94,7 +98,7 @@ def compile_invoice(id):
 
         :type date: datetime.datetime
         """
-        if invoice["locale"] == "de":
+        if invoice.locale == "de":
             return date.strftime("%d. %m. %Y")
         else:
             return date.strftime("%Y-%m-%d")
