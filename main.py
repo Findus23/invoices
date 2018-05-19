@@ -129,9 +129,9 @@ def sign_invoice(id):
         print("Invoice not found")
         name = ""
         exit()
-    subprocess.check_call([
+    command = [
         "java",
-        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.17.jar",
+        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.18.jar",
         "-i", "{dir}/{name}.pdf".format(dir=directory, name=name),
         "-o", "{dir}/{name}_{signed}.pdf".format(
             dir=directory, name=name, signed=("signiert" if name == "Rechnung" else "signed")
@@ -140,7 +140,9 @@ def sign_invoice(id):
         "-a",  # automatically position signature
         "-v", "true" if name == "Rechnung" else "false",
         "-s"  # save without asking
-    ])
+    ]
+    print(" ".join(command))
+    subprocess.check_call(command)
 
 
 if __name__ == "__main__":

@@ -53,7 +53,7 @@
 \newcommand{\CityShort}{\VAR{from.cityShort}}
 
 \setkomavar{fromaddress}{\Address\\\ZIP~\City
-    \BLOCK{if to.country!="Austria"}\\\VAR{from.country}\BLOCK{endif}}
+    \BLOCK{if to.country!="Österreich"}\\\VAR{from.country}\BLOCK{endif}}
 \setkomavar{fromphone}[]{\VAR{from.phone}}
 \setkomavar{fromemail}[]{\VAR{from.email}}
 \setkomavar{fromurl}[]{\VAR{from.url}}
@@ -83,7 +83,7 @@
 % Begin document
 \begin{document}
 \begin{letter}{\VAR{to.name} \\ \VAR{to.address} \\ \VAR{to.plz}~\VAR{to.ort}
-		\BLOCK{if to.country!="Austria"}\\\VAR{to.country}\BLOCK{endif}}
+		\BLOCK{if to.country!="Österreich"}\\\VAR{to.country}\BLOCK{endif}}
 \setkomavar{title}{\VAR{invoice.title}}
 \opening{}
 

@@ -41,7 +41,7 @@ def ask(question, validator=None, default=None, set=None):
                 continue
         if validator == "money":
             try:
-                answer = int(answer * 100)
+                answer = int(float(answer) * 100)
             except ValueError:
                 continue
         if validator == "int":
