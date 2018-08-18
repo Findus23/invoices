@@ -3,8 +3,8 @@ Jinja2==2.10
 MarkupSafe==1.0
 pyaml==17.12.1
 python-dateutil==2.7.3
-pytz==2018.4
-PyYAML==3.12
-regex==2018.2.21
+pytz==2018.5
+PyYAML==3.13
+regex==2018.8.17
 six==1.11.0
 tzlocal==1.5.1
