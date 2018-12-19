@@ -325,3 +325,4 @@ output*
 !*.example.yaml
 !strings.yaml
 .idea/
+Rechnungen
