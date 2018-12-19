@@ -130,8 +130,7 @@ def sign_invoice(id):
         name = ""
         exit()
     command = [
-        "java",
-        "-jar", "/usr/local/PDF-Over/lib/pdf-over-gui-4.1.18.jar",
+        "/usr/local/PDF-Over/scripts/pdf-over_linux.sh",
         "-i", "{dir}/{name}.pdf".format(dir=directory, name=name),
         "-o", "{dir}/{name}_{signed}.pdf".format(
             dir=directory, name=name, signed=("signiert" if name == "Rechnung" else "signed")
