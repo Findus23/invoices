@@ -72,8 +72,10 @@ def compile_invoice(id):
         autoescape=False,
         loader=jinja2.FileSystemLoader(os.path.abspath('.'))
     )
+    fromdata = load_yaml("from.yaml")
+    fromdata["country"] = fromdata["countryDE"] if invoice.locale == "de" else fromdata["countryEN"]
     data = {
-        "from": load_yaml("from.yaml"),
+        "from": fromdata,
         "to": load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)),
         "invoice": invoice,
         "config": config
