@@ -139,7 +139,7 @@ def sign_invoice(id):
         ),
         "-b", "LOCAL",  # use local Bürgerkarte
         "-a",  # automatically position signature
-        "-v", "true" if name == "Rechnung" else "false",
+        "-v", "true" if name == "Rechnung" else "false",  # set visibility
         "-s"  # save without asking
     ]
     print(" ".join(command))

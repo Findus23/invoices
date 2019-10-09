@@ -11,7 +11,7 @@ readline  # this does nothing but make sure the import readline is not removed a
 
 def load_yaml(filename):
     with open(filename, 'r') as stream:
-        return yaml.load(stream)
+        return yaml.safe_load(stream)
 
 
 def save_yaml(data, filename):
