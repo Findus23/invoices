@@ -88,14 +88,14 @@
 \opening{}
 
 \BLOCK{if invoice.mode=="single"}
-\begin{tabular}{ll}
+\begin{tabularx}{\textwidth}{lX}
 	\VAR{"descr"|t}:& \VAR{invoice.description} \\
 	\VAR{"period"|t}: & \VAR{invoice.range} \\
 	\VAR{"total"|t}: & \EUR{\VAR{invoice.price | formatdigit }} \\
 	
 	\vspace{0.5cm}
 	
-\end{tabular}
+\end{tabularx}
 \BLOCK{elif invoice.mode=="hourly"}
 
 \vspace{0.5cm}
