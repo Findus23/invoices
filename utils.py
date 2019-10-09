@@ -1,8 +1,12 @@
 import os
+import readline
 from glob import glob
 
 import dateparser
 import yaml
+
+# noinspection PyStatementEffect
+readline  # this does nothing but make sure the import readline is not removed accidently
 
 
 def load_yaml(filename):
