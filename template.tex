@@ -92,29 +92,29 @@
 	\VAR{"descr"|t}:& \VAR{invoice.description} \\
 	\VAR{"period"|t}: & \VAR{invoice.range} \\
 	\VAR{"total"|t}: & \EUR{\VAR{invoice.price | formatdigit }} \\
-	
+
 	\vspace{0.5cm}
-	
+
 \end{tabularx}
 \BLOCK{elif invoice.mode=="hourly"}
 
 \vspace{0.5cm}
 \begin{tabularx}{\textwidth}{Xrrr}
 	\VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
-	
+
 	\VAR{invoice.description} &
 	\EUR{\VAR{invoice.per_hour | formatdigit }} &
-	\VAR{invoice.hours}:\VAR{invoice.minutes} &
+	\VAR{invoice.hours}:\VAR{'%02d' % invoice.minutes} &
 	\EUR{\VAR{invoice.hourtotal() | formatdigit }} \\
-	
+
 	\BLOCK{if invoice.bank_fee}
 	    \VAR{"bank_fee"|t} & & & \EUR{\VAR{config.bank_fee| formatdigit}} \\
 	\BLOCK{endif}
-	
-	
+
+
 	\midrule %\cmidrule{4-4}
 
-	
+
 	& & & \EUR{\VAR{invoice.total() | formatdigit }} \\
 \end{tabularx}
 
