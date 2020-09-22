@@ -115,7 +115,7 @@ def compile_invoice(id):
         fh.write(template.render(section1='Long Form', section2='Short Form', **data))
     os.chdir(directory)
     for _ in range(2):
-        subprocess.check_call(['pdflatex', '{name}.tex'.format(name=translate("invoice"))])
+        subprocess.check_call(['pdflatex', '-interaction=nonstopmode', '{name}.tex'.format(name=translate("invoice"))])
     print(directory)
     remove_tmp_files(translate("invoice"))
 
