@@ -1,12 +1,68 @@
-# Invoices
+# Creating Invoices
 To generate invoices, you need multiple local configs. Your own information
-should be present in `from.yaml`, the person (or company) you write the invoice
-to should be present as a file in `recipients/<rname>.yaml`, where `rname` is
-the selector. The specific information about this invoice should be in
-`config.yaml`.
+should be present in `self.yaml`, the person (or company) you write the invoice
+to should be present as a file in `clients/<cname>.yaml`, where `cname` is
+the selector. Information specific to this invoice should be in `details.yaml`.
 
-## Your own information: from.yaml
-Have a file called `from.yaml` with your own information structured like this:
+## Setup
+First, you need to [install
+poetry](https://python-poetry.org/docs/#installation). If you have `nix` it is
+as simple as `nix-env -iA nixpkgs.poetry`. After that, create a virtual
+environment and install all dependencies.
+
+```
+$ virtualenv -p python3 .venv
+$ source .venv/bin/activate
+$ poetry install                # install dependencies
+```
+
+
+## Usage
+When you have created all config files, creating an invoice is as simple as:
+
+```
+$ python main.py
+```
+
+There are a few more options available though:
+```
+usage: main.py [-h] [--locale LOCALE] [--user USER] [--clients CLIENTS]
+               [--validate] [-v] [-y] [--nocolor] [--date DATE]
+               [DETAILS]
+
+script to help create invoices based on given information, should be easy to
+use. By default, will print and ask for confirmation on details before
+creating the invoice. This behavior can be deactivated with `-y|--yes`.
+
+positional arguments:
+  DETAILS            file with details and content specific to this invoice
+                     (default: details.yml)
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --locale LOCALE    what language the invoice should be in (default: de)
+  --user USER        your contact details and bank information. (default:
+                     self.yml)
+  --clients CLIENTS  relative path (folder) in which information about your
+                     clients is stored in `<cname>.yml` files. (default:
+                     clients/)
+  --validate         only validate available information and check available
+                     functionality, do not actually create invoice (default:
+                     False)
+  -v, --verbose      make logging output (more) verbose. Default (or 0) is
+                     ERROR, -v is WARN, -vv is INFO and -vvv is DEBUG. Can be
+                     passed multiple times. (default: 0)
+  -y, --yes          do not ask for confirmation before creating the actual
+                     invoice (default: False)
+  --nocolor          deactivate colored log output (default: False)
+  --date DATE        date formatting string the invoice should be dated at.
+                     Can be a specific day like '2020-09-01'. Defaults to
+                     today. (default: %Y-%m-%d)
+```
+
+# Config Files
+## Your own information: self.yaml
+Have a file called `self.yaml` with your own information structured like this:
 
 ### Field descriptions
 | Field | Type | description |
@@ -15,29 +71,26 @@ Have a file called `from.yaml` with your own information structured like this:
 | `address`     | string    | Your Address. Both street and number. |
 | `zip`         | int       | Your area ZIP code.   |
 | `city`        | string    | The city you live in. |
-| `cityShort`   | string    | Shortened version of your city name.  |
-| `countryDE`   | strang    | Name of your country in german, used for an invoice in german. |
-| `countryEN`   | strang    | Name of your country in english, used for an invoice in english. |
 | `IBAN`        | string    | The IBAN of your bank account.    |
 | `BIC`         | string    | The BIC of your bank account. |
 | `bank`        | string    | The name of your bank.    |
+| `phone`       | string    | Optional. Your Phone number. |
+| `email`       | string    | Optional. Your Email address. |
+| `url`         | string    | Optional. Link to your webpage. |
 
 ### Example
-```from.yaml
+```self.yml
 name: <name>
 address: <address>
 zip: <zip>
 city: <name of city>
-cityShort: <short name of city>
-countryDE: Deutschland
-countryEN: Germany
 IBAN: <IBAN>
 BIC: <BIC>
 bank: <name of bank>
 ```
 
-## Clients: recipients/\<rname\>.yaml
-For every clients `rname`, have a `recipients/<rname>.yaml` file structured
+## Clients: clients/\<cname\>.yaml
+For every clients `cname`, have a `clients/<cname>.yaml` file structured
 like this:
 
 ### Field descriptions
@@ -48,14 +101,9 @@ like this:
 | `zip`         | int       | ZIP code of your clients address.   |
 | `city`        | string    | City correlating to the zip code. |
 | `country`     | string    | Country of your clients business address. |
-<!--
-| `IBAN`        | string    | The IBAN of your bank account.    |
-| `BIC`         | string    | The BIC of your bank account. |
-| `bank`        | string    | The name of your bank.    |
--->
 
 ### Example
-```recipients/<rname>.yaml
+```clients/<cname>.yaml
 name: <name>
 address: <address>
 zip: <zip>
@@ -64,56 +112,31 @@ country: <country>
 ```
 
 
-## Config: config.yaml
-The main config is in a file called `config.yaml`:
+## Config: details.yaml
+Specific information is in a file called `details.yaml`:
 
 ### Field descriptions
 | Field | Type | description |
 |:---|:---:|:---|
 | `title`               | string    | Title of the invoice. |
 | `description`         | string    | Description of the work you did.  |
-| `range`               | string    | Timeframe during which you accumulated the given number of hours. |
-| `hours`               | int       | Number of hours you worked for the given timeframe and client. |
-| `default_recipient`   | string    | Filename (before the `.yaml`) of your default client. |
-| `last_id`             | int       | Since invoices need to have unique IDs, this number will be increased by one. After that, the config will be written back to the file. This deletes any prior comments. |
-| `invoice_dir`         | string    | Directory in which the invoice will be generated. Needs to exist prior to execution. |
-| `default_hourly_rate` | int       | The hourly rate you bill for in this receipt. |
+| `timeframe`           | string    | Timeframe during which you accumulated the given number of hours. |
+| `hours_worked`        | int       | Number of hours you worked for the given timeframe and client. |
+| `client`              | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
+| `invoice_id`          | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
+| `default_hourly_rate` | int       | The hourly rate you bill for in this invoice, in cents per hour. |
+<!--
 | `bank_fee`            | int       | Optional. Amount of bank fees you can invoice.    |
+-->
 
 ### Example
-```config.yaml
+```details.yaml
 title: <invoice title>
 description: <work description>
-range: <timeframe in which you worked>
-hours: <hours worked>
-default_recipient: <rname>
-last_id: <int>
-invoice_dir: invoice    # directory needs to exist
+timeframe: <timeframe in which you worked>
+hours_worked: <hours worked>
+client: <rname>
+invoice_id: <int>
 default_hourly_rate: <int>
 ```
 
-## Structure
-Before starting the script, make sure you have an invoice directory and
-recipients as well.
-```
-$ mkdir invoice
-$ mkdir recipients
-```
-
-## Setup
-```
-virtualenv -p python3 .venv
-source .venv/bin/activate
-# apparently this is one of the few ways to install poetry?
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-poetry install              # install dependencies
-```
-
-
-## Usage
-
-```
-$ python main.py create
-...     # you will be asked for details and further information here
-$ python main.py compile
-```
