@@ -1,173 +1,187 @@
 # noinspection PyUnresolvedReferences
 import readline
+import logging
 import subprocess
 import sys
+import os
 
 import jinja2
 
-from invoice import SingleInvoice, HourlyInvoice, Invoice
-from utils import *
+from lib.invoice import SingleInvoice, HourlyInvoice, Invoice
+from lib.utils import *
+from lib.functionality import create_invoice, compile_invoice, sign_invoice
 
-
-def create_invoice():
-    current_id = config["last_id"]
-    mode = ask("Mode", "set", set=["single", "hourly"], default="hourly")
-    if mode == "single":
-        invoice = SingleInvoice()
-    elif mode == "hourly":
-        invoice = HourlyInvoice()
-    else:
-        invoice = Invoice()
-    current_id += 1
-    config["last_id"] = current_id
-    invoice.locale = ask("locale", "set", set=["de", "en"], default="de")
-    invoice.id = ask("id", "int", default=current_id)
-    invoice.title = ask("title", default=config["title"])
-    invoice.recipient = ask("recipient", "set", set=get_possible_recipents(), default=config["default_recipient"])
-    invoice.date = ask("date", "date", default="today")
-    invoice.description = ask("description", default=config["description"])
-    invoice.range = ask("range", default=config["range"])
-
-    if invoice.mode == "single":
-        invoice.price = ask("price", "money")
-
-    elif invoice.mode == "hourly":
-        invoice.hours = ask("hours", "int", default=config["hours"])
-        invoice.minutes = ask("minutes", "int", default="0")
-        invoice.per_hour = ask("rate per hour", "money", default=config["default_hourly_rate"])
-    directory = invoice_dir + "/" + str(invoice.id)
-    if os.path.exists(directory):
-        if not ask("overwrite", "boolean"):
-            exit()
-    else:
-        os.mkdir(directory)
-    save_yaml(vars(invoice), directory + "/data.yaml")
-    save_yaml(config, "config.yaml")
-
-
-def compile_invoice(id):
-    directory = invoice_dir + "/" + str(id)
-    if os.path.exists(directory + "/locked"):
-        print("The invoice has already been locked")
-        exit()
-    invoicedata = load_yaml(directory + "/data.yaml")
-    mode = invoicedata["mode"]
-    del invoicedata["mode"]
-    if mode == "single":
-        invoice = SingleInvoice(**invoicedata)
-    elif mode == "hourly":
-        invoice = HourlyInvoice(**invoicedata)
-    else:
-        invoice = Invoice(**invoicedata)
-    env = jinja2.Environment(
-        block_start_string='\BLOCK{',
-        block_end_string='}',
-        variable_start_string='\VAR{',
-        variable_end_string='}',
-        comment_start_string='\#{',
-        comment_end_string='}',
-        line_statement_prefix='%#',
-        line_comment_prefix='%%',
-        trim_blocks=True,
-        autoescape=False,
-        loader=jinja2.FileSystemLoader(os.path.abspath('.'))
+def create_parser():
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="script to help create invoices based on given information, should be easy to use. By default, will ask for confirmation on details before creating the invoice. This behavior can be deactivated with `-y|--yes`.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    fromdata = load_yaml("from.yaml")
-    fromdata["country"] = fromdata["countryDE"] if invoice.locale == "de" else fromdata["countryEN"]
-    data = {
-        "from": fromdata,
-        "to": load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)),
-        "invoice": invoice,
-        "config": config
-    }
+    parser.add_argument(
+        "DETAILS",
+        default="details.yml", # originally: `config.yml`
+        nargs="?",
+        help="file with details and content specific to this invoice",
+    )
+    parser.add_argument(
+        "--user",
+        default="self.yml",    # originally: `from.yaml`
+        help="your contact details and bank information.",
+    )
+    parser.add_argument(
+        "--clients",
+        default="clients/",     # originally: `recipients/`
+        help="relative path (folder) in which information about your clients is stored in `<cname>.yml` files."
+    )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="only validate available information and check available functionality, do not actually create invoice",
+    )
+    # parser.add_argument(
+    #     "--finalize",
+    #     action="store_true",
+    #     help="finish creation of invoice, copies it to the local folder and increases counter id.",
+    # )
+    # parser.add_argument(
+    #     "--sign",
+    #     action="store_true",
+    #     help="digitally sign invoice with pdf-over (austria only). Only possible in combination with `--finalize`.",
+    # )
+    # parser.add_argument(
+    #     "--pdf-viewer",
+    #     default="evince",
+    #     help="tool to open the created invoice with, prior to finalizing",
+    # )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="make logging output (more) verbose. Default (or 0) is ERROR, -v is WARN, -vv is INFO and -vvv is DEBUG. Can be passed multiple times."
+    )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="do not ask for confirmation before creating the actual invoice",
+    )
+    parser.add_argument(
+        "--nocolor",
+        action="store_true",
+        help="deactivate colored log output",
+    )
+    # missing arguments:
+    # - take part of the config arguments as separate arguments
 
-    strings = load_yaml("strings.yaml")
-
-    def translate(key):
-        if key in strings:
-            return strings[key][invoice.locale]
-        else:
-            print("Translation key for '{key}' is missing".format(key=key))
-            exit()
-
-    def format_digit(integer):
-        integer = integer / 100
-        string = "{0:.2f}".format(integer)
-        if invoice.locale == "de":
-            string = string.replace(".", ",")
-        return string
-
-    def format_date(date):
-        """
-
-        :type date: datetime.datetime
-        """
-        if invoice.locale == "de":
-            return date.strftime("%d. %m. %Y")
-        else:
-            return date.strftime("%Y-%m-%d")
-
-    env.filters['formatdigit'] = format_digit
-    env.filters['formatdate'] = format_date
-    env.filters['t'] = translate
-    with open(directory + "/{name}.tex".format(name=translate("invoice")), "w") as fh:
-        template = env.get_template('template.tex')
-        fh.write(template.render(section1='Long Form', section2='Short Form', **data))
-    os.chdir(directory)
-    for _ in range(2):
-        subprocess.check_call(['pdflatex', '-interaction=nonstopmode', '{name}.tex'.format(name=translate("invoice"))])
-    print(directory)
-    remove_tmp_files(translate("invoice"))
+    return parser
 
 
-def sign_invoice(id):
-    directory = invoice_dir + "/" + str(id)
-    if os.path.exists(directory + "/locked"):
-        print("The invoice has already been locked")
-        exit()
-    if os.path.exists(directory + "/Rechnung.pdf"):
-        name = "Rechnung"
-    elif os.path.exists(directory + "/Invoice.pdf"):
-        name = "Invoice"
+def main(**kwargs):
+    # stuff to do:
+    # figure out mode:
+    # - create
+    # - compile
+    # - sign ?
+    #
+    # - autodetection if you actually want to increase invoice number
+    #
+    # create ?? or
+    # get config
+    # get invoice dir (create if not existent)
+    # get id
+    # compile/sign
+
+    log.debug("Loading user and detail files")
+    user = load_yaml(kwargs["user"])
+    details = load_yaml(kwargs["DETAILS"])
+
+    from lib.validate import validate, validate_user, validate_client, validate_details
+    validate(user, "user", validate_user)
+    validate(details, "details", validate_details)
+
+    log.debug("Loading client data")
+    client_file = kwargs["clients"] + "/" + details["client"] + ".yml"
+    # check if clients folder exists
+    if os.path.isdir(kwargs["clients"]):
+        client = load_yaml(client_file)
+        validate(client, "client", validate_client)
     else:
-        print("Invoice not found")
-        name = ""
-        exit()
-    command = [
-        "/usr/local/PDF-Over/scripts/pdf-over_linux.sh",
-        "-i", "{dir}/{name}.pdf".format(dir=directory, name=name),
-        "-o", "{dir}/{name}_{signed}.pdf".format(
-            dir=directory, name=name, signed=("signiert" if name == "Rechnung" else "signed")
-        ),
-        "-b", "LOCAL",  # use local Bürgerkarte
-        "-a",  # automatically position signature
-        "-v", "true" if name == "Rechnung" else "false",  # set visibility
-        "-s"  # save without asking
-    ]
-    print(" ".join(command))
-    subprocess.check_call(command)
+        log.critical("Client folder '" + kwargs["clients"] + "' does not exist.")
+        exit(1)
+
+    return
+
+    # steps:
+    # collect all information (read config.yml, from.yml)
+    # validate all data, ensure that it is complete (print to user for conformation)
+    # ask for user conformation
+    # template tex and build it (in /tmp/somewhere)
+    # rename file to 'invoice_name.pdf' or sth
+    # show invoice to user
+    # copy invoice and increase id number with --finalize (or similar)
+
+
+    # if len(sys.argv) == 1 or len(sys.argv) > 3 or sys.argv[1] not in ["create", "compile", "sign"]:
+    #     print("please use 'create', 'compile' or 'sign'")
+    #     exit()
+    # config = load_yaml("config.yaml")
+    # invoice_dir = config["invoice_dir"]
+
+    # if sys.argv[1] == "create":
+    #     create_invoice()
+    # if sys.argv[1] == "compile" or sys.argv[1] == "sign":
+    #     if len(sys.argv) == 3:
+    #         try:
+    #             invoice_id = int(sys.argv[2])
+    #         except ValueError:
+    #             invoice_id = False
+    #             print("invalid id")
+    #             exit()
+    #     else:
+    #         invoice_id = config["last_id"]
+    #     if sys.argv[1] == "compile":
+    #         compile_invoice(invoice_id)
+    #     else:
+    #         sign_invoice(invoice_id)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1 or len(sys.argv) > 3 or sys.argv[1] not in ["create", "compile", "sign"]:
-        print("please use 'create', 'compile' or 'sign'")
-        exit()
-    config = load_yaml("config.yaml")
-    invoice_dir = config["invoice_dir"]
+    args = create_parser().parse_args()
 
-    if sys.argv[1] == "create":
-        create_invoice()
-    if sys.argv[1] == "compile" or sys.argv[1] == "sign":
-        if len(sys.argv) == 3:
-            try:
-                invoice_id = int(sys.argv[2])
-            except ValueError:
-                invoice_id = False
-                print("invalid id")
-                exit()
-        else:
-            invoice_id = config["last_id"]
-        if sys.argv[1] == "compile":
-            compile_invoice(invoice_id)
-        else:
-            sign_invoice(invoice_id)
+    loglevels = [
+            logging.DEBUG,
+            logging.INFO,
+            logging.WARNING,
+            logging.ERROR,
+            logging.CRITICAL,
+        ]
+    logformats = [
+            "\33[0;37m%-8s\033[1;0m",  # DEBUG
+            "\33[1;32m%-8s\033[1;0m",  # INFO
+            "\33[1;33m%-8s\033[1;0m",  # WARNING
+            "\33[1;31m%-8s\033[1;0m",  # ERROR
+            "\33[1;41m%-8s\033[1;0m",  # CRITICAL
+        ]
+    loggingformats = list(zip(loglevels, logformats))
+
+    # check if the terminal supports colored output
+    colors = os.popen("tput colors 2> /dev/null").read()
+    if colors and int(colors) < 8 or args.nocolor:
+        # do not show colors, either not enough are supported or they are not
+        # wanted
+        nocolor = True
+        for level, _format in loggingformats:
+            set_log_level_format(level, "%-8s")
+    else:
+        nocolor = False
+        for level, format in loggingformats:
+            set_log_level_format(level, format)
+
+    logging.basicConfig(level=get_logging_level(args))
+    log = logging.getLogger(__name__)
+    log.info("Executing as main")
+    log.debug("Using terminal color output: %r" % (not nocolor))
+
+    log.debug("Args passed: " + str(args))
+    main(**vars(args))

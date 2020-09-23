@@ -322,6 +322,7 @@ venv.bak/
 
 output*
 *.yaml
+*.yml
 !*.example.yaml
 !strings.yaml
 .idea/

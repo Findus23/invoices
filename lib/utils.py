@@ -1,17 +1,30 @@
 import os
 import readline
+import logging
 from glob import glob
 
 import dateparser
 import yaml
+import logging
+log = logging.getLogger(__name__)
 
 # noinspection PyStatementEffect
 readline  # this does nothing but make sure the import readline is not removed accidently
 
 
 def load_yaml(filename):
-    with open(filename, 'r') as stream:
-        return yaml.safe_load(stream)
+    name = ".".join(filename.split(".")[:-1])
+    endings = [".yaml", ".yml"]
+    err = None
+    for end in endings:
+        try:
+            with open(name + end, 'r') as stream:
+                return yaml.safe_load(stream)
+        except FileNotFoundError as e:
+            err = e
+    log.critical(err)
+    log.error("Occured when attempting to load " + filename)
+    exit(1)
 
 
 def save_yaml(data, filename):
@@ -69,3 +82,19 @@ def ask(question, validator=None, default=None, set=None):
             else:
                 continue
         return answer
+
+
+def get_logging_level(args):
+    if args.verbose >= 3:
+        return logging.DEBUG
+    if args.verbose == 2:
+        return logging.INFO
+    if args.verbose >= 1:
+        return logging.WARNING
+    return logging.ERROR
+
+
+def set_log_level_format(logging_level, format):
+    logging.addLevelName(logging_level, format % logging.getLevelName(logging_level))
+
+

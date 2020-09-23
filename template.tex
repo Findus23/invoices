@@ -6,10 +6,10 @@
 %	foldmarks=p, % keine mittlere Faltmarke
 	foldmarks=off,
 	enlargefirstpage,
-	fromemail,
-	fromphone,
-	fromcity,
-	fromlogo,
+	useremail,
+	userphone,
+	usercity,
+	userlogo,
 	fromrule,
 	backaddress,
 ]{scrlttr2}
@@ -30,9 +30,9 @@
 \usepackage{color}
 \definecolor{LightGray}{rgb}{0.7,0.7,0.7}
 \definecolor{Gray}{rgb}{0.5,0.5,0.5}
-\setkomafont{fromrule}{\color{LightGray}}
-\setkomafont{fromaddress}{\sffamily} % Sans Serif
-\setkomafont{fromname}{\sffamily\bfseries} % and bold
+\setkomafont{userrule}{\color{LightGray}}
+\setkomafont{useraddress}{\sffamily} % Sans Serif
+\setkomafont{username}{\sffamily\bfseries} % and bold
 \setkomafont{pagefoot}{\sffamily\bfseries}
 
 \usepackage{graphicx}
@@ -45,25 +45,24 @@
 
 \newcommand{\BLOCK}[1]{\LaTeX} % Just a placeholder (will never be used)
 
-\newcommand{\Name}{\VAR{from.name}}
-\setkomavar{fromname}{\Name}
-\newcommand{\Address}{\VAR{from.address}}
-\newcommand{\ZIP}{\VAR{from.zip}}
-\newcommand{\City}{\VAR{from.city}}
-\newcommand{\CityShort}{\VAR{from.cityShort}}
+\newcommand{\Name}{\VAR{user.name}}
+\setkomavar{username}{\Name}
+\newcommand{\Address}{\VAR{user.address}}
+\newcommand{\ZIP}{\VAR{user.zip}}
+\newcommand{\City}{\VAR{user.city}}
+\newcommand{\CityShort}{\VAR{user.cityShort}}
 
-\setkomavar{fromaddress}{\Address\\\ZIP~\City
-    \BLOCK{if to.country!="Österreich"}\\\VAR{from.country}\BLOCK{endif}}
-\setkomavar{fromphone}[]{\VAR{from.phone}}
-\setkomavar{fromemail}[]{\VAR{from.email}}
-\setkomavar{fromurl}[]{\VAR{from.url}}
+\setkomavar{useraddress}{\Address\\\ZIP~\City\\\VAR{user.country}}
+\setkomavar{userphone}[]{\VAR{user.phone}}
+\setkomavar{useremail}[]{\VAR{user.email}}
+\setkomavar{userurl}[]{\VAR{user.url}}
 %\setkomavar{fromlogo}{\includegraphics[height=3.2cm]{template/header.jpg}}
 
 
-\setkomavar{frombank}{\VAR{from.bank}\separ IBAN: \VAR{from.IBAN}\separ BIC: \VAR{from.BIC}}
+\setkomavar{userbank}{\VAR{user.bank}\separ IBAN: \VAR{user.IBAN}\separ BIC: \VAR{user.BIC}}
 %TODO: Linie über
 \setkomavar{firstfoot}{\centering\color{Gray}\scriptsize\Name\separ\Address\separ\ZIP~\City\\
-\usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank}}
+\usekomavar{userphone}\separ\usekomavar{useremail}\separ\usekomavar{userurl}\\\usekomavar{userbank}}
 
 \setkomavar{invoice}{\VAR{invoice.id}}
 \setkomavar{date}{\VAR{invoice.date|formatdate}}
@@ -73,12 +72,12 @@
 
 \pdfinfo{
    /Author (\Name)
-   /Title  (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
-   /Subject (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
+   /Title  (\VAR{"invoice" |t} \VAR{user.name} (\VAR{rechnungsDatum}))
+   /Subject (\VAR{"invoice" |t} \VAR{user.name} (\VAR{rechnungsDatum}))
    /Keywords (\VAR{"invoice" |t})
 }
 
-\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\CityShort}
+\setkomavar{backaddress}{\usekomavar{username}, \Address, \ZIP~\CityShort}
 
 % Begin document
 \begin{document}
@@ -129,9 +128,9 @@
 \vspace{0.5cm}
 
 \begin{tabular}{@{}ll}
-	Bank: &\VAR{from.bank}\\
-	IBAN:& \VAR{from.IBAN}\\
-	BIC:& \VAR{from.BIC}
+	Bank: &\VAR{user.bank}\\
+	IBAN:& \VAR{user.IBAN}\\
+	BIC:& \VAR{user.BIC}
 \end{tabular}
 
 
