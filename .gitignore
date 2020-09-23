@@ -326,4 +326,5 @@ output*
 !*.example.yaml
 !strings.yaml
 .idea/
+clients
 Rechnungen

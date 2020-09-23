@@ -46,4 +46,3 @@ def validate_details(details: dict):
     details["hours_worked"]
     details["invoice_id"]
     details["timeframe"]
-    # details["invoice_dir"]

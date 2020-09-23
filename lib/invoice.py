@@ -25,12 +25,16 @@ class SingleInvoice(Invoice):
 
 class HourlyInvoice(Invoice):
 
-    def __init__(self, hours: int = None, minutes: int = None, per_hour: int = None, **kwargs):
+    def __init__(self, details, **kwargs):
         super(HourlyInvoice, self).__init__(**kwargs)
         self.mode = "hourly"
-        self.hours = hours
-        self.minutes = minutes
+        self.hours = details["hours"]
         self.per_hour = per_hour
+
+        if "minutes" in details:
+            self.minutes = details["minutes"]
+        else:
+            self.minutes = 0
 
     def hourtotal(self):
         return self.per_hour * (self.hours + self.minutes / 60)

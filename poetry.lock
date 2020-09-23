@@ -60,6 +60,14 @@ tzlocal = "*"
 
 [[package]]
 category = "main"
+description = "Secure hash and message digest algorithm library"
+name = "hashlib"
+optional = false
+python-versions = "*"
+version = "20081119"
+
+[[package]]
+category = "main"
 description = "A very fast and expressive template engine."
 name = "jinja2"
 optional = false
@@ -202,7 +210,7 @@ version = "2.1"
 toml = "*"
 
 [metadata]
-content-hash = "3f191dc7878184aed852823366f255758ac9148c6ba6ecc5ff25a5cb3c6ffe8b"
+content-hash = "cf8d65e1fc466f77094558ce983f490ecf30d9c2b84574ba0c0076a346c79537"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -224,6 +232,10 @@ click = [
 dateparser = [
     {file = "dateparser-0.7.6-py2.py3-none-any.whl", hash = "sha256:7552c994f893b5cb8fcf103b4cd2ff7f57aab9bfd2619fdf0cf571c0740fd90b"},
     {file = "dateparser-0.7.6.tar.gz", hash = "sha256:e875efd8c57c85c2d02b238239878db59ff1971f5a823457fcc69e493bf6ebfa"},
+]
+hashlib = [
+    {file = "hashlib-20060408a.win32-py2.4-openssl.exe", hash = "sha256:6ece4dbc12a71cd24793e5a06ba72f0ee0142affea6593842e5520f400ec9dbb"},
+    {file = "hashlib-20081119.zip", hash = "sha256:419de2fd10ae71ed9c6adcb55903f116abd1d8acc8c814dfd5f839b4d5013e38"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},

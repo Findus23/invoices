@@ -24,6 +24,11 @@ def create_parser():
         help="file with details and content specific to this invoice",
     )
     parser.add_argument(
+        "--locale",
+        default="de",
+        help="what language the invoice should be in",
+    )
+    parser.add_argument(
         "--user",
         default="self.yml",    # originally: `from.yaml`
         help="your contact details and bank information.",
@@ -70,6 +75,16 @@ def create_parser():
         "--nocolor",
         action="store_true",
         help="deactivate colored log output",
+    )
+    # parser.add_argument(
+    #     "--invoice-dir",
+    #     default="invoice",
+    #     help="directory in which to template the invoice."
+    # )
+    parser.add_argument(
+        "--date",
+        default="%Y-%m-%d",
+        help="date formatting string the invoice should be dated at. Can be a specific day like '2020-09-01'. Defaults to today.",
     )
     # missing arguments:
     # - take part of the config arguments as separate arguments
@@ -131,16 +146,26 @@ def main(**kwargs):
             log.error("Stopped by user. Not continuing")
             exit(0)
 
+    create_invoice(details, user, client, **kwargs)
     return
 
     # steps:
     # [x] collect all information (read config.yml, from.yml)
     # [x] validate all data, ensure that it is complete (print to user for conformation)
+    # [ ] validate that all required programs are installed for execution run
+    #       (pdflatex, pdf-over, evince, ...?)
     # [x] ask for user conformation
     # [ ] template tex and build it (in /tmp/somewhere)
     # [ ] rename file to 'invoice_name.pdf' or sth
     # [ ] show invoice to user
     # [ ] copy invoice and increase id number with --finalize (or similar)
+    #
+    # [ ] implement 'single'-item mode
+    # [ ] Add MwSt calculation
+    # [ ] Add optional USt-IdNr field
+    # [ ] allow multiple differently described hourly tasks
+    # [ ] enable addition of 'Spesen' after-tax
+    # [ ] be aware of locales (de/en)
 
     # if sys.argv[1] == "create":
     #     create_invoice()

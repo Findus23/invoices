@@ -93,9 +93,11 @@ default_hourly_rate: <int>
 ```
 
 ## Structure
+Before starting the script, make sure you have an invoice directory and
+recipients as well.
 ```
-mkdir invoice
-mkdir recipients
+$ mkdir invoice
+$ mkdir recipients
 ```
 
 ## Setup

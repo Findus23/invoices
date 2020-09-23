@@ -21,8 +21,8 @@ taxexception:
   en: VAT-exempt because of small-business regulation (§6(1)27 UStG)
 transfer:
   de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Werktage auf folgendes Konto zu überweisen
-  en: Please transfer the due invoice amount to the following account
-range:
+  en: Please transfer the due invoice amount to the following account within the next ten business days
+timeframe:
   de: Leistungszeitraum
   en: period
 bank_fee:
