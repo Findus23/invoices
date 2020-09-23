@@ -11,7 +11,6 @@ from .invoice import SingleInvoice, HourlyInvoice, Invoice
 from .utils import *
 
 
-
 def create_invoice():
     current_id = config["last_id"]
     mode = ask("Mode", "set", set=["single", "hourly"], default="hourly")

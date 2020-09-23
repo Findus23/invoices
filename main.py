@@ -14,7 +14,7 @@ from lib.functionality import create_invoice, compile_invoice, sign_invoice
 def create_parser():
     import argparse
     parser = argparse.ArgumentParser(
-        description="script to help create invoices based on given information, should be easy to use. By default, will ask for confirmation on details before creating the invoice. This behavior can be deactivated with `-y|--yes`.",
+        description="script to help create invoices based on given information, should be easy to use. By default, will print and ask for confirmation on details before creating the invoice. This behavior can be deactivated with `-y|--yes`.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -102,31 +102,45 @@ def main(**kwargs):
 
     log.debug("Loading client data")
     client_file = kwargs["clients"] + "/" + details["client"] + ".yml"
-    # check if clients folder exists
-    if os.path.isdir(kwargs["clients"]):
-        client = load_yaml(client_file)
-        validate(client, "client", validate_client)
-    else:
+
+    # check if clients folder exists, load and validate
+    if not os.path.isdir(kwargs["clients"]):
         log.critical("Client folder '" + kwargs["clients"] + "' does not exist.")
         exit(1)
+
+    client = load_yaml(client_file)
+    validate(client, "client", validate_client)
+
+    if not kwargs["yes"]:
+        log.debug("Printing information to user and asking for conformation")
+        print("Please check that the following information is correct:")
+        print("\nUSER" + "-" * 31)
+        for key, item in user.items():
+            print(str(item))
+        print("\nDETAILS" + "-" * 28)
+        for key, item in details.items():
+            print(key + ": " + str(item))
+        print("\nCLIENT" + "-" * 29)
+        for key, item in client.items():
+            print(str(item))
+
+        try:
+            input("\nCreate Invoice [Enter]")
+        except (KeyboardInterrupt, EOFError):
+            print()
+            log.error("Stopped by user. Not continuing")
+            exit(0)
 
     return
 
     # steps:
-    # collect all information (read config.yml, from.yml)
-    # validate all data, ensure that it is complete (print to user for conformation)
-    # ask for user conformation
-    # template tex and build it (in /tmp/somewhere)
-    # rename file to 'invoice_name.pdf' or sth
-    # show invoice to user
-    # copy invoice and increase id number with --finalize (or similar)
-
-
-    # if len(sys.argv) == 1 or len(sys.argv) > 3 or sys.argv[1] not in ["create", "compile", "sign"]:
-    #     print("please use 'create', 'compile' or 'sign'")
-    #     exit()
-    # config = load_yaml("config.yaml")
-    # invoice_dir = config["invoice_dir"]
+    # [x] collect all information (read config.yml, from.yml)
+    # [x] validate all data, ensure that it is complete (print to user for conformation)
+    # [x] ask for user conformation
+    # [ ] template tex and build it (in /tmp/somewhere)
+    # [ ] rename file to 'invoice_name.pdf' or sth
+    # [ ] show invoice to user
+    # [ ] copy invoice and increase id number with --finalize (or similar)
 
     # if sys.argv[1] == "create":
     #     create_invoice()
