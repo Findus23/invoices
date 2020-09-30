@@ -21,6 +21,9 @@ Have a file called `from.yaml` with your own information structured like this:
 | `IBAN`        | string    | The IBAN of your bank account.    |
 | `BIC`         | string    | The BIC of your bank account. |
 | `bank`        | string    | The name of your bank.    |
+| `phone`       | string    | Optional. Your phone number. |
+| `email`       | string    | Optional. Your mail address. |
+| `url`         | string    | Optional. Your homepage.  |
 
 ### Example
 ```from.yaml
@@ -36,6 +39,8 @@ BIC: <BIC>
 bank: <name of bank>
 ```
 
+It's no big deal to leave some of the fields empty.
+
 ## Clients: recipients/\<rname\>.yaml
 For every clients `rname`, have a `recipients/<rname>.yaml` file structured
 like this:
@@ -48,11 +53,6 @@ like this:
 | `zip`         | int       | ZIP code of your clients address.   |
 | `city`        | string    | City correlating to the zip code. |
 | `country`     | string    | Country of your clients business address. |
-<!--
-| `IBAN`        | string    | The IBAN of your bank account.    |
-| `BIC`         | string    | The BIC of your bank account. |
-| `bank`        | string    | The name of your bank.    |
--->
 
 ### Example
 ```recipients/<rname>.yaml
