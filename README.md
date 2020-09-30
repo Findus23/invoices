@@ -93,18 +93,38 @@ default_hourly_rate: <int>
 ```
 
 ## Structure
+The directory structure of where you execute this script should look something
+like this:
 ```
-mkdir invoice
-mkdir recipients
+$ tree
+.
+├── invoice     # content is generated, but folder needs to exist
+│   ├── <id>
+│   └── <id>
+├── recipients
+│   ├── <rname>.yaml
+│   └── <rname>.yaml
+├── from.yaml
+└── config.yaml
 ```
 
 ## Setup
+Make sure to install poetry first.
+
+### Nix
+`nix-env -iA nixpkgs.poetry`
+
+### Other
+According to [their website](https://python-poetry.org/docs/#installation),
+this is the recommended way of installation:
+`curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python`
+
+### Install dependencies
+Make sure to switch to a virtual environment prior to installing dependencies.
 ```
-virtualenv -p python3 .venv
-source .venv/bin/activate
-# apparently this is one of the few ways to install poetry?
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-poetry install              # install dependencies
+$ virtualenv -p python3 .venv
+$ source .venv/bin/activate
+$ poetry install              # install dependencies
 ```
 
 
@@ -112,6 +132,6 @@ poetry install              # install dependencies
 
 ```
 $ python main.py create
-...     # you will be asked for details and further information here
+...     # you will be asked for details and further information interactively
 $ python main.py compile
 ```
