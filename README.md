@@ -16,8 +16,8 @@ Have a file called `from.yaml` with your own information structured like this:
 | `zip`         | int       | Your area ZIP code.   |
 | `city`        | string    | The city you live in. |
 | `cityShort`   | string    | Shortened version of your city name.  |
-| `countryDE`   | strang    | Name of your country in german, used for an invoice in german. |
-| `countryEN`   | strang    | Name of your country in english, used for an invoice in english. |
+| `countryDE`   | strang    | Name of your country in German, used for an invoice in German. |
+| `countryEN`   | strang    | Name of your country in English, used for an invoice in English. |
 | `IBAN`        | string    | The IBAN of your bank account.    |
 | `BIC`         | string    | The BIC of your bank account. |
 | `bank`        | string    | The name of your bank.    |
