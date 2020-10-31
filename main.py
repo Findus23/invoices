@@ -26,7 +26,7 @@ def create_parser():
     parser.add_argument(
         "--locale",
         default="de",
-        help="what language the invoice should be in",
+        help="what language the invoice should be in. Ignored if set in `details.yml`",
     )
     parser.add_argument(
         "--user",
@@ -84,7 +84,7 @@ def create_parser():
     parser.add_argument(
         "--date",
         default="%Y-%m-%d",
-        help="date formatting string the invoice should be dated at. Can be a specific day like '2020-09-01'. Defaults to today.",
+        help="datetime formatting string the invoice should be dated at. Can be a specific day like '2020-09-01'. Defaults to today.",
     )
     # missing arguments:
     # - take part of the config arguments as separate arguments
@@ -125,6 +125,9 @@ def main(**kwargs):
 
     client = load_yaml(client_file)
     validate(client, "client", validate_client)
+
+    if "locale" in details:
+        details["locale"] = kwargs["locale"]
 
     if not kwargs["yes"]:
         log.debug("Printing information to user and asking for conformation")
