@@ -85,16 +85,15 @@
 \setkomavar{title}{\VAR{details.title}}
 \opening{}
 
-% \BLOCK{if details.mode=="single"}
+% details.mode=="single"
 % \begin{tabularx}{\textwidth}{lX}
-%       \VAR{"descr"|t}:& \VAR{details.description} \\
-%       \VAR{"period"|t}: & \VAR{details.timeframe} \\
-%       \VAR{"total"|t}: & \EUR{\VAR{details.price | formatdigit }} \\
+%       \VA R{"descr"|t}:  & \VA R{details.description} \\
+%       \VA R{"period"|t}: & \VA R{details.timeframe} \\
+%       \VA R{"total"|t}:  & \EUR{\VA R{details.price | formatdigit }} \\
 %
 %       \vspace{0.5cm}
 %
 % \end{tabularx}
-% \BLOCK{elif details.mode=="hourly"}
 
 % Consider a table with:
 % Amount | Unit | description ('Leistung') | price per unit | total
@@ -108,23 +107,12 @@
         \VAR{details.hours_worked}:\VAR{'%02d' % details.mins_worked} &
         \EUR{\VAR{total_cost | formatdigit }} \\
 
-        \BLOCK{if details.bank_fee}
-            \VAR{"bank_fee"|t} & & & \EUR{\VAR{details.bank_fee| formatdigit}} \\
-        \BLOCK{endif}
-
-
         \midrule %\cmidrule{4-4}
 
 
         & & & \EUR{\VAR{total_cost | formatdigit }} \\
 \end{tabularx}
 
-% \BLOCK{endif} % if mode="hourly"
-
-% \vspace{0.5cm}
-% \noindent \VAR{"taxexception"|t}
-
-% \vspace{0.5cm}
 \vspace{3cm}
 \noindent \VAR{"transfer"|t}:
 
