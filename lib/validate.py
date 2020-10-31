@@ -39,7 +39,7 @@ def validate_details(details: dict):
     required) keys are present. Will throw an
     Exception if not.
     """
-    details["hourly_rate"]
+    details["hourly_rate_cents"]
     details["client"]
     details["title"]
     details["description"]

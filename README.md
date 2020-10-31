@@ -125,7 +125,7 @@ Specific information is in a file called `details.yaml`:
 | `hours_worked`        | int       | Number of hours you worked for the given timeframe and client. |
 | `client`              | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
 | `invoice_id`          | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
-| `default_hourly_rate` | int       | The hourly rate you bill for in this invoice, in cents per hour. |
+| `hourly_rate_cents`   | int       | The hourly rate you bill for in this invoice, in cents per hour. |
 | `locale`              | string    | Optional, `de` or `en`. Ignoring `--locale` if set. Default: `de` |
 <!--
 | `bank_fee`            | int       | Optional. Amount of bank fees you can invoice.    |
@@ -139,7 +139,7 @@ timeframe: <timeframe in which you worked>
 hours_worked: <hours worked>
 client: <rname>
 invoice_id: <int>
-hourly_rate: <int>
+hourly_rate_cents: <int>
 mwst_percent: 19
 ```
 

@@ -37,7 +37,7 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
         "client": client, # load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)), # client
         "details": details,
         "datestr": datestr,
-        "total_cost": details["hours_worked"] * details["hourly_rate"],
+        "total_cost": details["hours_worked"] * details["hourly_rate_cents"],
         # "invoice": ""
         "invoice": details   # details
         # "config": details  # details

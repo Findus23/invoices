@@ -104,7 +104,7 @@
         \VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
 
         \VAR{details.description} &
-        \EUR{\VAR{details.hourly_rate | formatdigit }} &
+        \EUR{\VAR{details.hourly_rate_cents | formatdigit }} &
         \VAR{details.hours_worked}:\VAR{'%02d' % details.mins_worked} &
         \EUR{\VAR{total_cost | formatdigit }} \\
 
