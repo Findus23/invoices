@@ -1,17 +1,17 @@
 \documentclass[
-	a4paper,
-	12pt,
-	version=last,
-	fromalign=right,
-%	foldmarks=p, % keine mittlere Faltmarke
-	foldmarks=off,
-	enlargefirstpage,
-	fromemail,
-	fromphone,
-	fromcity,
-	fromlogo,
-	fromrule,
-	backaddress,
+        a4paper,
+        12pt,
+        version=last,
+        fromalign=right,
+%       foldmarks=p, % keine mittlere Faltmarke
+        foldmarks=off,
+        enlargefirstpage,
+        fromemail,
+        fromphone,
+%       fromcity,
+        fromlogo,
+        fromrule,
+        backaddress,
 ]{scrlttr2}
 \usepackage[utf8]{inputenc}
 \BLOCK{ if details.locale == "de" }
@@ -50,7 +50,6 @@
 \newcommand{\Address}{\VAR{user.address}}
 \newcommand{\ZIP}{\VAR{user.zip}}
 \newcommand{\City}{\VAR{user.city}}
-\newcommand{\CityShort}{\VAR{user.city}}
 \newcommand{\Country}{\VAR{user.country}}
 
 \setkomavar{fromaddress}{\Address\\\ZIP~\City\\\Country}
@@ -78,7 +77,7 @@
    /Keywords (\VAR{"invoice" |t})
 }
 
-\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\CityShort}
+\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\City}
 
 % Begin document
 \begin{document}
@@ -88,11 +87,11 @@
 
 % \BLOCK{if details.mode=="single"}
 % \begin{tabularx}{\textwidth}{lX}
-% 	\VAR{"descr"|t}:& \VAR{details.description} \\
-% 	\VAR{"period"|t}: & \VAR{details.timeframe} \\
-% 	\VAR{"total"|t}: & \EUR{\VAR{details.price | formatdigit }} \\
+%       \VAR{"descr"|t}:& \VAR{details.description} \\
+%       \VAR{"period"|t}: & \VAR{details.timeframe} \\
+%       \VAR{"total"|t}: & \EUR{\VAR{details.price | formatdigit }} \\
 %
-% 	\vspace{0.5cm}
+%       \vspace{0.5cm}
 %
 % \end{tabularx}
 % \BLOCK{elif details.mode=="hourly"}
@@ -102,22 +101,22 @@
 
 \vspace{0.5cm}
 \begin{tabularx}{\textwidth}{Xrrr}
-	\VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
+        \VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
 
         \VAR{details.description} &
-	\EUR{\VAR{details.hourly_rate | formatdigit }} &
-	\VAR{details.hours_worked}:\VAR{'%02d' % details.mins_worked} &
-	\EUR{\VAR{total_cost | formatdigit }} \\
+        \EUR{\VAR{details.hourly_rate | formatdigit }} &
+        \VAR{details.hours_worked}:\VAR{'%02d' % details.mins_worked} &
+        \EUR{\VAR{total_cost | formatdigit }} \\
 
-	\BLOCK{if details.bank_fee}
-	    \VAR{"bank_fee"|t} & & & \EUR{\VAR{details.bank_fee| formatdigit}} \\
-	\BLOCK{endif}
-
-
-	\midrule %\cmidrule{4-4}
+        \BLOCK{if details.bank_fee}
+            \VAR{"bank_fee"|t} & & & \EUR{\VAR{details.bank_fee| formatdigit}} \\
+        \BLOCK{endif}
 
 
-	& & & \EUR{\VAR{total_cost | formatdigit }} \\
+        \midrule %\cmidrule{4-4}
+
+
+        & & & \EUR{\VAR{total_cost | formatdigit }} \\
 \end{tabularx}
 
 % \BLOCK{endif} % if mode="hourly"
@@ -132,9 +131,9 @@
 \vspace{0.5cm}
 
 \begin{tabular}{@{}ll}
-	Bank: &\VAR{user.bank}\\
-	IBAN:& \VAR{user.IBAN}\\
-	BIC:& \VAR{user.BIC}
+        Bank: &\VAR{user.bank}\\
+        IBAN:& \VAR{user.IBAN}\\
+        BIC:& \VAR{user.BIC}
 \end{tabular}
 
 
