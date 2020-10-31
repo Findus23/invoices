@@ -20,7 +20,7 @@ def validate_client(client: dict):
     client["address"]
     client["zip"]
     client["city"]
-    client["country"]
+    # client["country"]
 
 
 def validate_user(user: dict):

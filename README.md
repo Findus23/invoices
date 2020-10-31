@@ -84,6 +84,7 @@ name: <name>
 address: <address>
 zip: <zip>
 city: <name of city>
+country: <country>
 IBAN: <IBAN>
 BIC: <BIC>
 bank: <name of bank>
@@ -137,6 +138,7 @@ timeframe: <timeframe in which you worked>
 hours_worked: <hours worked>
 client: <rname>
 invoice_id: <int>
-default_hourly_rate: <int>
+hourly_rate: <int>
+mwst_percent: 19
 ```
 
