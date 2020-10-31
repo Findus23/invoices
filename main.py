@@ -129,9 +129,6 @@ def main(**kwargs):
     if not ("locale" in details):
         details["locale"] = kwargs["locale"]
 
-    if not ("mins_worked" in details):
-        details["mins_worked"] = 0
-
     if not kwargs["yes"]:
         log.debug("Printing information to user and asking for conformation")
         print("Please check that the following information is correct:")
