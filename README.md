@@ -71,6 +71,7 @@ Have a file called `self.yaml` with your own information structured like this:
 | `address`     | string    | Your Address. Both street and number. |
 | `zip`         | int       | Your area ZIP code.   |
 | `city`        | string    | The city you live in. |
+| `country`     | string    | Optional. The country you live in. |
 | `IBAN`        | string    | The IBAN of your bank account.    |
 | `BIC`         | string    | The BIC of your bank account. |
 | `bank`        | string    | The name of your bank.    |
@@ -84,7 +85,6 @@ name: <name>
 address: <address>
 zip: <zip>
 city: <name of city>
-country: <country>
 IBAN: <IBAN>
 BIC: <BIC>
 bank: <name of bank>
@@ -101,7 +101,7 @@ like this:
 | `address`     | string    | Your clients business address. Both street and number. |
 | `zip`         | int       | ZIP code of your clients address.   |
 | `city`        | string    | City correlating to the zip code. |
-| `country`     | string    | Country of your clients business address. |
+| `country`     | string    | Optional. Country of your clients business address. |
 
 ### Example
 ```clients/<cname>.yaml
