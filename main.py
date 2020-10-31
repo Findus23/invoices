@@ -92,6 +92,25 @@ def create_parser():
     return parser
 
 
+def check_programs():
+    """ Check if `evince` and `pdflatex` are available.
+    """
+    import subprocess
+    try:
+        log.debug("Checking if `evince` is installed")
+        subprocess.run(['evince', '--version'], check = True)
+    except subprocess.CalledProcessError:
+        log.critical("`evince` not found in $PATH. Install and try again.")
+        exit(1)
+
+    try:
+        log.debug("Checking if `pdflatex` is installed")
+        subprocess.run(['pdflatex', '--version'], check = True)
+    except subprocess.CalledProcessError:
+        log.critical("`pdflatex` not found in $PATH. Install and try again.")
+        exit(1)
+
+
 def main(**kwargs):
     # stuff to do:
     # figure out mode:
@@ -127,7 +146,8 @@ def main(**kwargs):
     validate(client, "client", validate_client)
 
     if kwargs["validate"]:
-        log.info("Successfully validated config files")
+        check_programs()
+        log.info("Successfully validated config files and environment")
         exit(0)
 
     if not ("locale" in details):

@@ -87,7 +87,7 @@ def ask(question, validator=None, default=None, set=None):
 def get_logging_level(args):
     if args.verbose >= 3:
         return logging.DEBUG
-    if args.verbose == 2:
+    if args.verbose == 2 or args.validate:
         return logging.INFO
     if args.verbose >= 1:
         return logging.WARNING
