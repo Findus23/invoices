@@ -75,8 +75,10 @@ Have a file called `self.yaml` with your own information structured like this:
 | `IBAN`        | string    | The IBAN of your bank account.    |
 | `BIC`         | string    | The BIC of your bank account. |
 | `bank`        | string    | The name of your bank.    |
-| `phone`       | string    | Optional. Your Phone number. |
-| `email`       | string    | Optional. Your Email address. |
+| `stid`        | string    | Optional. Your tax number.    |
+| `ustid`       | string    | Optional. Your sales tax identification number. Will not show `stid` if available. |
+| `phone`       | string    | Optional. Your phone number. |
+| `email`       | string    | Optional. Your email address. |
 | `url`         | string    | Optional. Link to your webpage. |
 
 ### Example

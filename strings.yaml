@@ -28,3 +28,18 @@ timeframe:
 bank_fee:
   de: Überweisungsgebühr
   en: Bank Fees
+net:
+  de: Nettobetrag
+  en: Net amount
+plus:
+  de: zzgl.
+  en: plus
+total:
+  de: Gesamtbetrag
+  en: Total amount
+ustid:
+  de: USt-ID
+  en: sales tax identification number
+stid:
+  de: SteuerNr
+  en: tax number

@@ -62,7 +62,13 @@
 \setkomavar{frombank}{\VAR{user.bank}\separ IBAN: \VAR{user.IBAN}\separ BIC: \VAR{user.BIC}}
 %TODO: Linie über
 \setkomavar{firstfoot}{\centering\color{Gray}\scriptsize\Name\separ\Address\separ\ZIP~\City\\
-    \usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank}}
+    \BLOCK{ if user.ustid }
+    \VAR{"ustid"|t}: \VAR{user.ustid} \\
+    \BLOCK{ elif user.stid }
+    \VAR{"stid"|t}: \VAR{user.stid} \\
+    \BLOCK{ endif }
+    \usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank} \\
+    }
 
 \setkomavar{invoice}{\VAR{details.invoice_id}}
 \setkomavar{date}{\VAR{datestr}}
