@@ -126,7 +126,7 @@ def main(**kwargs):
     client = load_yaml(client_file)
     validate(client, "client", validate_client)
 
-    if "locale" in details:
+    if not ("locale" in details):
         details["locale"] = kwargs["locale"]
 
     if not ("mins_worked" in details):
