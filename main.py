@@ -14,7 +14,7 @@ from lib.functionality import create_invoice, compile_invoice, sign_invoice
 def create_parser():
     import argparse
     parser = argparse.ArgumentParser(
-        description="script to help create invoices based on given information, should be easy to use. By default, will print and ask for confirmation on details before creating the invoice. This behavior can be deactivated with `-y|--yes`.",
+        description="script to help create invoices based on information from config files. By default, ask for confirmation on details before creating an invoice. This behavior can be deactivated with `-y|--yes`.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -126,12 +126,17 @@ def main(**kwargs):
     client = load_yaml(client_file)
     validate(client, "client", validate_client)
 
+    if kwargs["validate"]:
+        log.info("Successfully validated config files")
+        exit(0)
+
     if not ("locale" in details):
         details["locale"] = kwargs["locale"]
 
     if not kwargs["yes"]:
         log.debug("Printing information to user and asking for conformation")
         print("Please check that the following information is correct:")
+        print("Locale: " + details["locale"])
         print("\nUSER" + "-" * 31)
         for key, item in user.items():
             print(str(item))
