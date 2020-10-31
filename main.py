@@ -11,15 +11,17 @@ from lib.invoice import SingleInvoice, HourlyInvoice, Invoice
 from lib.utils import *
 from lib.functionality import create_invoice, compile_invoice, sign_invoice
 
+
 def create_parser():
     import argparse
+
     parser = argparse.ArgumentParser(
         description="script to help create invoices based on information from config files. By default, ask for confirmation on details before creating an invoice. This behavior can be deactivated with `-y|--yes`.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "DETAILS",
-        default="details.yml", # originally: `config.yml`
+        default="details.yml",  # originally: `config.yml`
         nargs="?",
         help="file with details and content specific to this invoice",
     )
@@ -30,13 +32,13 @@ def create_parser():
     )
     parser.add_argument(
         "--user",
-        default="self.yml",    # originally: `from.yaml`
+        default="self.yml",  # originally: `from.yaml`
         help="your contact details and bank information.",
     )
     parser.add_argument(
         "--clients",
-        default="clients/",     # originally: `recipients/`
-        help="relative path (folder) in which information about your clients is stored in `<cname>.yml` files."
+        default="clients/",  # originally: `recipients/`
+        help="relative path (folder) in which information about your clients is stored in `<cname>.yml` files.",
     )
     parser.add_argument(
         "--validate",
@@ -63,7 +65,7 @@ def create_parser():
         "--verbose",
         action="count",
         default=0,
-        help="make logging output (more) verbose. Default (or 0) is ERROR, -v is WARN, -vv is INFO and -vvv is DEBUG. Can be passed multiple times."
+        help="make logging output (more) verbose. Default (or 0) is ERROR, -v is WARN, -vv is INFO and -vvv is DEBUG. Can be passed multiple times.",
     )
     parser.add_argument(
         "-y",
@@ -72,9 +74,7 @@ def create_parser():
         help="do not ask for confirmation before creating the actual invoice",
     )
     parser.add_argument(
-        "--nocolor",
-        action="store_true",
-        help="deactivate colored log output",
+        "--nocolor", action="store_true", help="deactivate colored log output"
     )
     # parser.add_argument(
     #     "--invoice-dir",
@@ -96,16 +96,17 @@ def check_programs():
     """ Check if `evince` and `pdflatex` are available.
     """
     import subprocess
+
     try:
         log.debug("Checking if `evince` is installed")
-        subprocess.run(['evince', '--version'], check = True)
+        subprocess.run(["evince", "--version"], check=True)
     except subprocess.CalledProcessError:
         log.critical("`evince` not found in $PATH. Install and try again.")
         exit(1)
 
     try:
         log.debug("Checking if `pdflatex` is installed")
-        subprocess.run(['pdflatex', '--version'], check = True)
+        subprocess.run(["pdflatex", "--version"], check=True)
     except subprocess.CalledProcessError:
         log.critical("`pdflatex` not found in $PATH. Install and try again.")
         exit(1)
@@ -131,6 +132,7 @@ def main(**kwargs):
     details = load_yaml(kwargs["DETAILS"])
 
     from lib.validate import validate, validate_user, validate_client, validate_details
+
     validate(user, "user", validate_user)
     validate(details, "details", validate_details)
 
@@ -217,19 +219,19 @@ if __name__ == "__main__":
     args = create_parser().parse_args()
 
     loglevels = [
-            logging.DEBUG,
-            logging.INFO,
-            logging.WARNING,
-            logging.ERROR,
-            logging.CRITICAL,
-        ]
+        logging.DEBUG,
+        logging.INFO,
+        logging.WARNING,
+        logging.ERROR,
+        logging.CRITICAL,
+    ]
     logformats = [
-            "\33[0;37m%-8s\033[1;0m",  # DEBUG
-            "\33[1;32m%-8s\033[1;0m",  # INFO
-            "\33[1;33m%-8s\033[1;0m",  # WARNING
-            "\33[1;31m%-8s\033[1;0m",  # ERROR
-            "\33[1;41m%-8s\033[1;0m",  # CRITICAL
-        ]
+        "\33[0;37m%-8s\033[1;0m",  # DEBUG
+        "\33[1;32m%-8s\033[1;0m",  # INFO
+        "\33[1;33m%-8s\033[1;0m",  # WARNING
+        "\33[1;31m%-8s\033[1;0m",  # ERROR
+        "\33[1;41m%-8s\033[1;0m",  # CRITICAL
+    ]
     loggingformats = list(zip(loglevels, logformats))
 
     # check if the terminal supports colored output

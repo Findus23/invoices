@@ -1,12 +1,16 @@
 import logging
+
 log = logging.getLogger(__name__)
+
 
 def validate(d: dict, name: str, validation_func):
     log.debug("Validating " + name.lower())
     try:
         validation_func(d)
     except KeyError as e:
-        log.critical("Field required but missing (in " + name.upper() + " file): " + str(e))
+        log.critical(
+            "Field required but missing (in " + name.upper() + " file): " + str(e)
+        )
         exit(1)
 
 

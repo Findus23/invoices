@@ -2,9 +2,17 @@ from datetime import datetime
 
 
 class Invoice(object):
-
-    def __init__(self, id: int = None, locale: int = None, title: str = None, recipient: object = None,
-                 date: datetime = None, description: str = None, range: str = None, bank_fee: int = None):
+    def __init__(
+        self,
+        id: int = None,
+        locale: int = None,
+        title: str = None,
+        recipient: object = None,
+        date: datetime = None,
+        description: str = None,
+        range: str = None,
+        bank_fee: int = None,
+    ):
         self.id = id
         self.locale = locale
         self.title = title
@@ -16,7 +24,6 @@ class Invoice(object):
 
 
 class SingleInvoice(Invoice):
-
     def __init__(self, price: int = None, **kwargs):
         super(SingleInvoice, self).__init__(**kwargs)
         self.mode = "single"
@@ -24,7 +31,6 @@ class SingleInvoice(Invoice):
 
 
 class HourlyInvoice(Invoice):
-
     def __init__(self, details, **kwargs):
         super(HourlyInvoice, self).__init__(**kwargs)
         self.mode = "hourly"

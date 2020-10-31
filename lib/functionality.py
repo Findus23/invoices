@@ -26,7 +26,6 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
             string = string.replace(".", ",")
         return string
 
-
     invoice_id = details["invoice_id"]
     # invoice = HourlyInvoice()
 
@@ -34,59 +33,60 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
 
     data = {
         "user": userdata,
-        "client": client, # load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)), # client
+        "client": client,  # load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)), # client
         "details": details,
         "datestr": datestr,
         "total_cost": details["hours_worked"] * details["hourly_rate_cents"],
         # "invoice": ""
-        "invoice": details   # details
+        "invoice": details  # details
         # "config": details  # details
     }
 
     strings = load_yaml("strings.yaml")
 
     env = jinja2.Environment(
-        block_start_string='\BLOCK{',
-        block_end_string='}',
-        variable_start_string='\VAR{',
-        variable_end_string='}',
-        comment_start_string='\#{',
-        comment_end_string='}',
-        line_statement_prefix='%#',
-        line_comment_prefix='%%',
+        block_start_string="\BLOCK{",
+        block_end_string="}",
+        variable_start_string="\VAR{",
+        variable_end_string="}",
+        comment_start_string="\#{",
+        comment_end_string="}",
+        line_statement_prefix="%#",
+        line_comment_prefix="%%",
         trim_blocks=True,
         autoescape=False,
-        loader=jinja2.FileSystemLoader(os.path.abspath('.'))
+        loader=jinja2.FileSystemLoader(os.path.abspath(".")),
     )
 
-    env.filters['formatdigit'] = format_digit
-    env.filters['t'] = translate
-
+    env.filters["formatdigit"] = format_digit
+    env.filters["t"] = translate
 
     directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))[:12]  # str(invoice.id)
     if not os.path.exists(directory):
         os.mkdir(directory)
 
     print(directory)
-    invoice_tex = '{name}.tex'.format(name=translate("invoice"))
-    invoice_pdf = '{name}.pdf'.format(name=translate("invoice"))
+    invoice_tex = "{name}.tex".format(name=translate("invoice"))
+    invoice_pdf = "{name}.pdf".format(name=translate("invoice"))
 
     with open(directory + "/" + invoice_tex, "w") as fh:
-        template = env.get_template('template.tex')
-        fh.write(template.render(section1='Long Form', section2='Short Form', **data))
+        template = env.get_template("template.tex")
+        fh.write(template.render(section1="Long Form", section2="Short Form", **data))
 
     cwd = os.getcwd()
     os.chdir(directory)
 
     for _ in range(2):
         try:
-            subprocess.check_call(['pdflatex', '-interaction=batchmode', invoice_tex])
+            subprocess.check_call(["pdflatex", "-interaction=batchmode", invoice_tex])
         except subprocess.CalledProcessError:
             pass
         # remove_tmp_files(translate("invoice"))
     # subprocess.check_call(['evince', invoice_pdf])
-    subprocess.Popen(['evince', invoice_pdf])
-    subprocess.Popen(['cp', invoice_pdf, cwd + "/" + invoice_pdf[:-4] + "_" + datestr + ".pdf"])
+    subprocess.Popen(["evince", invoice_pdf])
+    subprocess.Popen(
+        ["cp", invoice_pdf, cwd + "/" + invoice_pdf[:-4] + "_" + datestr + ".pdf"]
+    )
 
     # originally:
     # invoice.locale = "de"

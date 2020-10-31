@@ -6,6 +6,7 @@ from glob import glob
 import dateparser
 import yaml
 import logging
+
 log = logging.getLogger(__name__)
 
 # noinspection PyStatementEffect
@@ -18,7 +19,7 @@ def load_yaml(filename):
     err = None
     for end in endings:
         try:
-            with open(name + end, 'r') as stream:
+            with open(name + end, "r") as stream:
                 return yaml.safe_load(stream)
         except FileNotFoundError as e:
             err = e
@@ -28,7 +29,7 @@ def load_yaml(filename):
 
 
 def save_yaml(data, filename):
-    with open(filename, 'w') as outfile:
+    with open(filename, "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
 
@@ -38,12 +39,19 @@ def remove_tmp_files(base):
 
 
 def get_possible_recipents():
-    return [os.path.splitext(os.path.basename(file))[0] for file in glob("recipients/*.yaml")]
+    return [
+        os.path.splitext(os.path.basename(file))[0]
+        for file in glob("recipients/*.yaml")
+    ]
 
 
 def ask(question, validator=None, default=None, set=None):
     while True:
-        string = question + (" [{default}]".format(default=default) if default else "") + ": "
+        string = (
+            question
+            + (" [{default}]".format(default=default) if default else "")
+            + ": "
+        )
         answer = input(string)
         if answer == "":
             if default:
@@ -75,7 +83,7 @@ def ask(question, validator=None, default=None, set=None):
                 print("only [{formats}] are allowed".format(formats=", ".join(set)))
                 continue
         if validator == "boolean":
-            if answer.lower() in ['true', '1', 't', 'y', 'yes']:
+            if answer.lower() in ["true", "1", "t", "y", "yes"]:
                 return True
             elif answer.lower() in ["false", "0", "f", "n", "no"]:
                 return False
@@ -100,9 +108,9 @@ def set_log_level_format(logging_level, format):
 
 def md5(fname):
     import hashlib
+
     hash_md5 = hashlib.md5()
     with open(fname, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
