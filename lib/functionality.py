@@ -62,25 +62,31 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
     env.filters['formatdigit'] = format_digit
     env.filters['t'] = translate
 
-    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))  # str(invoice.id)
+
+    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))[:12]  # str(invoice.id)
     if not os.path.exists(directory):
         os.mkdir(directory)
 
     print(directory)
+    invoice_tex = '{name}.tex'.format(name=translate("invoice"))
+    invoice_pdf = '{name}.pdf'.format(name=translate("invoice"))
 
-    with open(directory + "/{name}.tex".format(name=translate("invoice")), "w") as fh:
+    with open(directory + "/" + invoice_tex, "w") as fh:
         template = env.get_template('template.tex')
         fh.write(template.render(section1='Long Form', section2='Short Form', **data))
+
+    cwd = os.getcwd()
     os.chdir(directory)
 
     for _ in range(2):
         try:
-            subprocess.check_call(['pdflatex', '-interaction=batchmode', '{name}.tex'.format(name=translate("invoice"))])
+            subprocess.check_call(['pdflatex', '-interaction=batchmode', invoice_tex])
         except subprocess.CalledProcessError:
             pass
         # remove_tmp_files(translate("invoice"))
-    # subprocess.check_call(['evince', '{name}.pdf'.format(name=translate("invoice"))])
-    subprocess.Popen(['evince', '{name}.pdf'.format(name=translate("invoice"))])
+    # subprocess.check_call(['evince', invoice_pdf])
+    subprocess.Popen(['evince', invoice_pdf])
+    subprocess.Popen(['cp', invoice_pdf, cwd + "/" + invoice_pdf[:-4] + "_" + datestr + ".pdf"])
 
     # originally:
     # invoice.locale = "de"
