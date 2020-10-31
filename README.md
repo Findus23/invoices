@@ -128,6 +128,7 @@ Specific information is in a file called `details.yaml`:
 | `client`              | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
 | `invoice_id`          | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
 | `hourly_rate_cents`   | int       | The hourly rate you bill for in this invoice, in cents per hour. |
+| `mwst_percent`        | int       | Optional. If the calculation should include MwSt, and the percentage. |
 | `locale`              | string    | Optional. `de` or `en`. Overrides `--locale`. Default: `de` |
 <!--
 | `bank_fee`            | int       | Optional. Amount of bank fees you can invoice.    |
