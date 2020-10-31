@@ -72,9 +72,10 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
         template = env.get_template('template.tex')
         fh.write(template.render(section1='Long Form', section2='Short Form', **data))
     os.chdir(directory)
+
     for _ in range(2):
         try:
-            subprocess.check_call(['pdflatex', '-interaction=nonstopmode', '{name}.tex'.format(name=translate("invoice"))])
+            subprocess.check_call(['pdflatex', '-interaction=batchmode', '{name}.tex'.format(name=translate("invoice"))])
         except subprocess.CalledProcessError:
             pass
         # remove_tmp_files(translate("invoice"))
