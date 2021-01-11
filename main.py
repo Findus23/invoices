@@ -22,19 +22,19 @@ def create_invoice():
     config["last_id"] = current_id
     invoice.locale = ask("locale", "set", set=["de", "en"], default="de")
     invoice.id = ask("id", "int", default=current_id)
-    invoice.title = ask("title")
+    invoice.title = ask("title", default=config["title"])
     invoice.recipient = ask("recipient", "set", set=get_possible_recipents(), default=config["default_recipient"])
     invoice.date = ask("date", "date", default="today")
-    invoice.description = ask("description")
-    invoice.range = ask("range")
+    invoice.description = ask("description", default=config["description"])
+    invoice.range = ask("range", default=config["range"])
 
     if invoice.mode == "single":
         invoice.price = ask("price", "money")
 
     elif invoice.mode == "hourly":
-        invoice.hours = ask("hours", "int")
-        invoice.minutes = ask("minutes", "int")
-        invoice.per_hour = ask("per hour", "money", default=config["default_hourly_rate"])
+        invoice.hours = ask("hours", "int", default=config["hours"])
+        invoice.minutes = ask("minutes", "int", default="0")
+        invoice.per_hour = ask("rate per hour", "money", default=config["default_hourly_rate"])
     directory = invoice_dir + "/" + str(invoice.id)
     if os.path.exists(directory):
         if not ask("overwrite", "boolean"):
@@ -115,7 +115,7 @@ def compile_invoice(id):
         fh.write(template.render(section1='Long Form', section2='Short Form', **data))
     os.chdir(directory)
     for _ in range(2):
-        subprocess.check_call(['pdflatex', '{name}.tex'.format(name=translate("invoice"))])
+        subprocess.check_call(['pdflatex', '-interaction=nonstopmode', '{name}.tex'.format(name=translate("invoice"))])
     print(directory)
     remove_tmp_files(translate("invoice"))
 
