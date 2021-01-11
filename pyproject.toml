@@ -6,10 +6,10 @@ authors = ["Lukas Winkler <git@lw1.at>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-mypy = "^0.761"
+mypy = "^0.790"
 pyyaml = "^5.2"
 Jinja2 = "^2.10.3"
-dateparser = "^0.7.2"
+dateparser = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 
