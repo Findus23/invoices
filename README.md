@@ -67,7 +67,7 @@ Have a file called `self.yaml` with your own information structured like this:
 ### Field descriptions
 | Field | Type | description |
 |:---|:---:|:---|
-| `name`        | string    | Your full name.    |
+| `name`        | string    | Your full name or company name.    |
 | `address`     | string    | Your Address. Both street and number. |
 | `zip`         | int       | Your area ZIP code.   |
 | `city`        | string    | The city you live in. |
@@ -99,7 +99,7 @@ like this:
 ### Field descriptions
 | Field | Type | description |
 |:---|:---:|:---|
-| `name`        | string    | Your clients name. |
+| `name`        | string    | Your clients name or company name. |
 | `address`     | string    | Your clients business address. Both street and number. |
 | `zip`         | int       | ZIP code of your clients address.   |
 | `city`        | string    | City correlating to the zip code. |
