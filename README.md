@@ -1,8 +1,8 @@
 # Creating Invoices
-To generate invoices, you need multiple local configs. Your own information
-should be present in `self.yaml`, the person (or company) you write the invoice
-to should be present as a file in `clients/<cname>.yaml`, where `cname` is
-the selector. Information specific to this invoice should be in `details.yaml`.
+To generate invoices, you need multiple local configurations. Your own
+information is declared in `self.yaml`, client information can be declared in
+files `clients/<cname>.yaml`, where `cname` is the client selector. Specific
+information for this invoice can be configured in `details.yaml`.
 
 ## Setup
 First, you need to [install
@@ -56,7 +56,7 @@ optional arguments:
                      invoice (default: False)
   --nocolor          deactivate colored log output (default: False)
   --date DATE        date formatting string the invoice should be dated at.
-                     Can be a specific day like '2020-09-01'. Defaults to
+                     Can be a specific day like '2021-09-01'. Defaults to
                      today. (default: %Y-%m-%d)
 ```
 
@@ -92,6 +92,7 @@ BIC: <BIC>
 bank: <name of bank>
 ```
 
+
 ## Clients: clients/\<cname\>.yaml
 For every clients `cname`, have a `clients/<cname>.yaml` file structured
 like this:
@@ -121,15 +122,16 @@ Specific information is in a file called `details.yaml`:
 ### Field descriptions
 | Field | Type | description |
 |:---|:---:|:---|
-| `title`               | string    | Title of the invoice. |
-| `description`         | string    | Description of the work you did.  |
-| `timeframe`           | string    | Timeframe during which you accumulated the given number of hours. |
-| `hours_worked`        | int       | Number of hours you worked for the given timeframe and client. |
-| `client`              | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
-| `invoice_id`          | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
-| `hourly_rate_cents`   | int       | The hourly rate you bill for in this invoice, in cents per hour. |
-| `mwst_percent`        | int       | Optional. If the calculation should include MwSt, and the percentage. |
-| `locale`              | string    | Optional. `de` or `en`. Overrides `--locale`. Default: `de` |
+| `title`                 | string    | Title of the invoice. |
+| `timeframe`             | string    | Timeframe during which you accumulated the given number of hours. |
+| `client`                | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
+| `invoice_id`            | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
+| `items`                 | list      | Optional. Entries must include `description`, `amount` and `item_price_cents`. |
+| `description`           | string    | Optional. Description of the work you did. |
+| `hours_worked`/`amount` | int       | Optional. Number of hours you worked for the given timeframe and client. |
+| `hourly_rate_cents`/`item_price_cents` | int       | Optional. The hourly rate you bill for in this invoice, in cents per hour. |
+| `mwst_percent`          | int       | Optional. If the (global) calculation should include MwSt, and the percentage. |
+| `locale`                | string    | Optional. `de` or `en`. Overrides `--locale`. Default: `de` |
 <!--
 | `bank_fee`            | int       | Optional. Amount of bank fees you can invoice.    |
 -->
@@ -137,12 +139,28 @@ Specific information is in a file called `details.yaml`:
 ### Example
 ```details.yaml
 title: <invoice title>
-description: <work description>
 timeframe: <timeframe in which you worked>
-hours_worked: <hours worked>
 client: <rname>
 invoice_id: <int>
+description: <work description>
+hours_worked: <hours worked>
 hourly_rate_cents: <int>
 mwst_percent: 19
 ```
+```details.yaml
+title: <invoice title>
+timeframe: <timeframe in which you worked>
+client: <rname>
+invoice_id: <int>
+items:
+  - description: <work description 1>
+    amount: <int>
+    item_price_cents: <int>
+  - description: <work description 2>
+    amount: <int>
+    item_price_cents: <int>
+mwst_percent: 19
+```
 
+Both styles can be combined, and the lower-level item is then placed first.
+It is not possible to specify individual mwst-rates.

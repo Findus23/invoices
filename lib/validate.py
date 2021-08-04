@@ -4,6 +4,8 @@ log = logging.getLogger(__name__)
 
 
 def validate(d: dict, name: str, validation_func):
+    """Validate the given dictionary with its validation function.
+    """
     log.debug("Validating " + name.lower())
     try:
         validation_func(d)
@@ -15,7 +17,7 @@ def validate(d: dict, name: str, validation_func):
 
 
 def validate_client(client: dict):
-    """ To validate, simply check if all (later
+    """To validate, simply check if all (later
     required) keys are present. Will throw an
     Exception if not.
     """
@@ -27,7 +29,7 @@ def validate_client(client: dict):
 
 
 def validate_user(user: dict):
-    """ To validate, simply check if all (later
+    """To validate, simply check if all (later
     required) keys are present. Will throw an
     Exception if not.
     """
@@ -38,14 +40,32 @@ def validate_user(user: dict):
 
 
 def validate_details(details: dict):
-    """ To validate, simply check if all (later
+    """To validate, simply check if all (later
     required) keys are present. Will throw an
     Exception if not.
     """
-    details["hourly_rate_cents"]
     details["client"]
     details["title"]
-    details["description"]
-    details["hours_worked"]
     details["invoice_id"]
     details["timeframe"]
+    # 'hours_worked' or 'amount'
+    # 'hourly_rate_cents' or 'item_price_cents'
+    if details.get("items"):
+        validate_items(details["items"])
+    else:
+        details["description"]
+        validate_either(details, "amount", "hours_worked")
+        validate_either(details, "item_price_cents", "hourly_rate_cents")
+
+
+def validate_items(items: dict):
+    for item in items:
+        item["amount"]
+        item["description"]
+        item["item_price_cents"]
+
+
+def validate_either(d: dict, k1, k2):
+    if d.get(k1):
+        return
+    d[k2]

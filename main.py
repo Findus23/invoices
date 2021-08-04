@@ -84,7 +84,7 @@ def create_parser():
     parser.add_argument(
         "--date",
         default="%Y-%m-%d",
-        help="datetime formatting string the invoice should be dated at. Can be a specific day like '2020-09-01'. Defaults to today.",
+        help="datetime formatting string the invoice should be dated at. Can be a specific day like '2021-09-01'. Defaults to today.",
     )
     # missing arguments:
     # - take part of the config arguments as separate arguments
@@ -93,8 +93,7 @@ def create_parser():
 
 
 def check_programs():
-    """ Check if `evince` and `pdflatex` are available.
-    """
+    """Check if `evince` and `pdflatex` are available."""
     import subprocess
 
     try:
@@ -127,8 +126,9 @@ def main(**kwargs):
     # get id
     # compile/sign
 
-    log.debug("Loading user and detail files")
+    log.debug("Loading user")
     user = load_yaml(kwargs["user"])
+    log.debug("Loading details")
     details = load_yaml(kwargs["DETAILS"])
 
     from lib.validate import validate, validate_user, validate_client, validate_details
@@ -136,7 +136,7 @@ def main(**kwargs):
     validate(user, "user", validate_user)
     validate(details, "details", validate_details)
 
-    log.debug("Loading client data")
+    log.debug("Loading client")
     client_file = kwargs["clients"] + "/" + details["client"] + ".yml"
 
     # check if clients folder exists, load and validate

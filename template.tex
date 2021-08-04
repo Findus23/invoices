@@ -108,10 +108,14 @@
 \begin{tabularx}{\textwidth}{Xrrr}
     \VAR{"descr"|t} & \VAR{"amount"|t} & \VAR{"item_price"|t} & \VAR{"total"|t} \\ \midrule
 
-    \VAR{details.description} &
-    \VAR{details.hours_worked} &
-    \VAR{details.hourly_rate_cents | formatdigit } \EUR &
-    \VAR{total_cost | formatdigit } \EUR \\
+    \BLOCK{ if items_table }
+        \VAR{items_table}
+    \BLOCK{ else }
+        \VAR{details.description} &
+        \VAR{details.hours_worked} &
+        \VAR{details.hourly_rate_cents | formatdigit } \EUR &
+        \VAR{total_cost | formatdigit } \EUR \\
+    \BLOCK{ endif }
 
     \midrule %\cmidrule{4-4}
 

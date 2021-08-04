@@ -26,20 +26,56 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
             string = string.replace(".", ",")
         return string
 
+    def item_to_line(item: dict) -> str:
+        item["sum"] = format_digit(item["amount"] * item["item_price_cents"])
+        item["item_price_cents"] = format_digit(item["item_price_cents"])
+        return "{description} & {amount} & {item_price_cents} & {sum} \\\\".format(
+            **item
+        )
+
+    def sum_items(items: dict) -> int:
+        result = 0
+        for item in items:
+            result += item["item_price_cents"] * item["amount"]
+        return result
+
     invoice_id = details["invoice_id"]
     # invoice = HourlyInvoice()
 
     datestr = datetime.today().strftime(date)
 
+    items_table = ""
+    total_cost = 0
+
+    # check if the items_table needs to be created.
+    if details.get("items"):
+        log.info("Noticed multiple line items. Creating table")
+        if details.get("description"):
+            # there is still a 'normally' defined item. Include as first
+            details["items"].insert(
+                0,
+                {
+                    "description": details["description"],
+                    "amount": details.get("amount") or details.get("hours_worked"),
+                    "item_price_cents": details.get("item_price_cents")
+                    or details.get("hourly_rate_cents"),
+                },
+            )
+        total_cost = sum_items(details["items"])
+        items_table = "".join(item_to_line(i) for i in details["items"])
+    else:
+        total_cost = (
+            details.get("hours_worked") or details.get("amount")
+        ) * (details.get("hourly_rate_cents") or details.get("item_price_cents"))
+
     data = {
         "user": userdata,
-        "client": client,  # load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)), # client
+        "client": client,
         "details": details,
         "datestr": datestr,
-        "total_cost": details["hours_worked"] * details["hourly_rate_cents"],
-        # "invoice": ""
-        "invoice": details  # details
-        # "config": details  # details
+        "total_cost": total_cost,
+        "invoice": details,
+        "items_table": items_table,
     }
 
     strings = load_yaml("strings.yaml")
