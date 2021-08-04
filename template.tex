@@ -1,24 +1,24 @@
 \documentclass[
-	a4paper,
-	12pt,
-	version=last,
-	fromalign=right,
-%	foldmarks=p, % keine mittlere Faltmarke
-	foldmarks=off,
-	enlargefirstpage,
-	fromemail,
-	fromphone,
-	fromcity,
-	fromlogo,
-	fromrule,
-	backaddress,
+        a4paper,
+        12pt,
+        version=last,
+        fromalign=right,
+%       foldmarks=p, % keine mittlere Faltmarke
+        foldmarks=off,
+        enlargefirstpage,
+        fromemail,
+        fromphone,
+%       fromcity,
+        fromlogo,
+        fromrule,
+        backaddress,
 ]{scrlttr2}
 \usepackage[utf8]{inputenc}
-\BLOCK{if invoice.locale =="de"}
+\BLOCK{ if details.locale == "de" }
 \usepackage[ngerman]{babel}
-\BLOCK{else}
+\BLOCK{ else }
 \usepackage[english]{babel}
-\BLOCK{endif}
+\BLOCK{ endif }
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{mathpazo}
@@ -45,93 +45,106 @@
 
 \newcommand{\BLOCK}[1]{\LaTeX} % Just a placeholder (will never be used)
 
-\newcommand{\Name}{\VAR{from.name}}
+\newcommand{\Name}{\VAR{user.name}}
 \setkomavar{fromname}{\Name}
-\newcommand{\Address}{\VAR{from.address}}
-\newcommand{\ZIP}{\VAR{from.zip}}
-\newcommand{\City}{\VAR{from.city}}
-\newcommand{\CityShort}{\VAR{from.cityShort}}
+\newcommand{\Address}{\VAR{user.address}}
+\newcommand{\ZIP}{\VAR{user.zip}}
+\newcommand{\City}{\VAR{user.city}}
+\newcommand{\Country}{\VAR{user.country}}
 
-\setkomavar{fromaddress}{\Address\\\ZIP~\City
-    \BLOCK{if to.country!="Österreich"}\\\VAR{from.country}\BLOCK{endif}}
-\setkomavar{fromphone}[]{\VAR{from.phone}}
-\setkomavar{fromemail}[]{\VAR{from.email}}
-\setkomavar{fromurl}[]{\VAR{from.url}}
+\setkomavar{fromaddress}{\Address\\\ZIP~\City\\\Country}
+\setkomavar{fromphone}[]{\VAR{user.phone}}
+\setkomavar{fromemail}[]{\VAR{user.email}}
+\setkomavar{fromurl}[]{\VAR{user.url}}
 %\setkomavar{fromlogo}{\includegraphics[height=3.2cm]{template/header.jpg}}
 
 
-\setkomavar{frombank}{\VAR{from.bank}\separ IBAN: \VAR{from.IBAN}\separ BIC: \VAR{from.BIC}}
+\setkomavar{frombank}{\VAR{user.bank}\separ IBAN: \VAR{user.IBAN}\separ BIC: \VAR{user.BIC}}
 %TODO: Linie über
 \setkomavar{firstfoot}{\centering\color{Gray}\scriptsize\Name\separ\Address\separ\ZIP~\City\\
-\usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank}}
+    \BLOCK{ if user.ustid }
+    \VAR{"ustid"|t}: \VAR{user.ustid} \\
+    \BLOCK{ elif user.stid }
+    \VAR{"stid"|t}: \VAR{user.stid} \\
+    \BLOCK{ endif }
+    \usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank} \\
+    }
 
-\setkomavar{invoice}{\VAR{invoice.id}}
-\setkomavar{date}{\VAR{invoice.date|formatdate}}
-\newkomavar*[\VAR{"range"|t}]{range}
-\setkomavar{range}{\VAR{invoice.range}}
+\setkomavar{invoice}{\VAR{details.invoice_id}}
+\setkomavar{date}{\VAR{datestr}}
+\newkomavar*[\VAR{"timeframe"|t}]{timeframe}
+\setkomavar{timeframe}{\VAR{details.timeframe}}
 
 
 \pdfinfo{
    /Author (\Name)
-   /Title  (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
-   /Subject (\VAR{"invoice" |t} \VAR{from.name} (\VAR{rechnungsDatum}))
-   /Keywords (\VAR{"invoice" |t})
+   /Title  (\VAR{"invoice" |t} \VAR{user.name} \VAR{datestr})
+   /Subject (\VAR{"invoice" |t} \VAR{user.name} \VAR{datestr})
+   /Keywords (\VAR{"invoice" |t} \VAR{datestr})
 }
 
-\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\CityShort}
+\setkomavar{backaddress}{\usekomavar{fromname}, \Address, \ZIP~\City}
 
 % Begin document
 \begin{document}
-\begin{letter}{\VAR{to.name} \\ \VAR{to.address} \\ \VAR{to.zip}~\VAR{to.city}
-		\\\VAR{to.country}}
-\setkomavar{title}{\VAR{invoice.title}}
+\begin{letter}{\VAR{client.name} \\ \VAR{client.address} \\ \VAR{client.zip}~\VAR{client.city}\\\VAR{client.country}}
+\setkomavar{title}{\VAR{details.title}}
 \opening{}
 
-\BLOCK{if invoice.mode=="single"}
-\begin{tabularx}{\textwidth}{lX}
-	\VAR{"descr"|t}:& \VAR{invoice.description} \\
-	\VAR{"period"|t}: & \VAR{invoice.range} \\
-	\VAR{"total"|t}: & \EUR{\VAR{invoice.price | formatdigit }} \\
+% details.mode=="single"
+% \begin{tabularx}{\textwidth}{lX}
+%       \VA R{"descr"|t}:  & \VA R{details.description} \\
+%       \VA R{"period"|t}: & \VA R{details.timeframe} \\
+%       \VA R{"total"|t}:  & \EUR{\VA R{details.price | formatdigit }} \\
+%
+%       \vspace{0.5cm}
+%
+% \end{tabularx}
 
-	\vspace{0.5cm}
-
-\end{tabularx}
-\BLOCK{elif invoice.mode=="hourly"}
+% Consider a table with:
+% Amount | Unit | description ('Leistung') | price per unit | total
 
 \vspace{0.5cm}
 \begin{tabularx}{\textwidth}{Xrrr}
-	\VAR{"descr"|t} & \VAR{"per_hour"|t} & \VAR{"hours"|t} & \VAR{"total"|t} \\ \midrule
+    \VAR{"descr"|t} & \VAR{"amount"|t} & \VAR{"item_price"|t} & \VAR{"total"|t} \\ \midrule
 
-	\VAR{invoice.description} &
-	\EUR{\VAR{invoice.per_hour | formatdigit }} &
-	\VAR{invoice.hours}:\VAR{'%02d' % invoice.minutes} &
-	\EUR{\VAR{invoice.hourtotal() | formatdigit }} \\
+    \BLOCK{ if items_table }
+        \VAR{items_table}
+    \BLOCK{ else }
+        \VAR{details.description} &
+        \VAR{details.hours_worked} &
+        \VAR{details.hourly_rate_cents | formatdigit } \EUR &
+        \VAR{total_cost | formatdigit } \EUR \\
+    \BLOCK{ endif }
 
-	\BLOCK{if invoice.bank_fee}
-	    \VAR{"bank_fee"|t} & & & \EUR{\VAR{config.bank_fee| formatdigit}} \\
-	\BLOCK{endif}
+    \midrule %\cmidrule{4-4}
 
+    \BLOCK{ if details.mwst_percent }
 
-	\midrule %\cmidrule{4-4}
+        \vspace{0.5cm} \\
 
+        \VAR{"net"|t} & & & \VAR{total_cost | formatdigit} \EUR \\
+        \VAR{"plus"|t} \VAR{details.mwst_percent} \% MwSt. & & & \VAR{(total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
+        \VAR{"total"|t} & & & \VAR{(total_cost + total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
 
-	& & & \EUR{\VAR{invoice.total() | formatdigit }} \\
+        \midrule
+
+    \BLOCK{ else }
+        & & & \VAR{total_cost | formatdigit } \EUR \\
+    \BLOCK{ endif }
+
 \end{tabularx}
 
-\BLOCK{endif}
 
-\vspace{0.5cm}
-\noindent \VAR{"taxexception"|t}
-
-\vspace{0.5cm}
+\vspace{1cm}
 \noindent \VAR{"transfer"|t}:
 
 \vspace{0.5cm}
 
 \begin{tabular}{@{}ll}
-	Bank: &\VAR{from.bank}\\
-	IBAN:& \VAR{from.IBAN}\\
-	BIC:& \VAR{from.BIC}
+        Bank: &\VAR{user.bank}\\
+        IBAN:& \VAR{user.IBAN}\\
+        BIC:& \VAR{user.BIC}
 \end{tabular}
 
 

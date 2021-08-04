@@ -8,23 +8,38 @@ period:
   de: Leistungszeitraum
   en: Period
 total:
-  de: Gesamtpreis
+  de: Betrag
   en: Total
-per_hour:
-  de: Stundensatz
-  en: Hourly Rate
-hours:
-  de: Stunden
-  en: Hours
+item_price:
+  de: Einzelpreis
+  en: Unit price
+amount:
+  de: Anzahl
+  en: Amount
 taxexception:
   de: Umsatzsteuerfrei aufgrund der Kleinunternehmerregelung gemäß §6(1)27 UStG
   en: VAT-exempt because of small-business regulation (§6(1)27 UStG)
 transfer:
-  de: Ich bitte Sie, den Gesamtbetrag innerhalb der nächsten 10 Werktage auf folgendes Konto zu überweisen
-  en: Please transfer the due invoice amount to the following account
-range:
+  de: Bitte überweisen Sie den Gesamtbetrag innerhalb der nächsten zehn Werktage auf folgendes Konto
+  en: Please transfer the due invoice amount to the following account within the next ten business days
+timeframe:
   de: Leistungszeitraum
   en: period
 bank_fee:
   de: Überweisungsgebühr
   en: Bank Fees
+net:
+  de: Nettobetrag
+  en: Net amount
+plus:
+  de: zzgl.
+  en: plus
+total:
+  de: Gesamtbetrag
+  en: Total amount
+ustid:
+  de: USt-ID
+  en: sales tax identification number
+stid:
+  de: SteuerNr
+  en: tax number
