@@ -9,7 +9,7 @@ import jinja2
 
 from lib.invoice import SingleInvoice, HourlyInvoice, Invoice
 from lib.utils import *
-from lib.functionality import create_invoice, compile_invoice, sign_invoice
+from lib.functionality import create_invoice, sign_invoice
 
 
 def create_parser():
@@ -26,6 +26,21 @@ def create_parser():
         help="file with details and content specific to this invoice",
     )
     parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="ignore previous temporary files in build environment.",
+    )
+    parser.add_argument(
+        "--clients",
+        default="clients/",  # originally: `recipients/`
+        help="relative path (folder) in which information about your clients is stored in `<cname>.yml` files.",
+    )
+    parser.add_argument(
+        "--date",
+        default="%Y-%m-%d",
+        help="datetime formatting string the invoice should be dated at. Can be a specific day like '2021-09-01'. Defaults to today.",
+    )
+    parser.add_argument(
         "--locale",
         default="de",
         help="what language the invoice should be in. Ignored if set in `details.yml`",
@@ -34,11 +49,6 @@ def create_parser():
         "--user",
         default="self.yml",  # originally: `from.yaml`
         help="your contact details and bank information.",
-    )
-    parser.add_argument(
-        "--clients",
-        default="clients/",  # originally: `recipients/`
-        help="relative path (folder) in which information about your clients is stored in `<cname>.yml` files.",
     )
     parser.add_argument(
         "--validate",
@@ -81,11 +91,6 @@ def create_parser():
     #     default="invoice",
     #     help="directory in which to template the invoice."
     # )
-    parser.add_argument(
-        "--date",
-        default="%Y-%m-%d",
-        help="datetime formatting string the invoice should be dated at. Can be a specific day like '2021-09-01'. Defaults to today.",
-    )
     # missing arguments:
     # - take part of the config arguments as separate arguments
 

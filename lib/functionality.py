@@ -12,6 +12,19 @@ from .utils import *
 
 
 def create_invoice(details, userdata, client, date, locale, **kwargs):
+
+    compiled = False
+    cwd = os.getcwd()
+    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))[:12]
+    if not os.path.exists(directory):
+        log.debug("Creating new temp directory")
+        os.mkdir(directory)
+    elif kwargs["clean"]:
+        log.warn("No change in details.yml; but recompiling `--clean`.")
+    else:
+        log.warn("No change in details.yml; not recompiling.")
+        compiled = True
+
     def translate(key):
         if key in strings:
             return strings[key][locale]
@@ -39,10 +52,30 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
             result += item["item_price_cents"] * item["amount"]
         return result
 
+    strings = load_yaml("strings.yaml")
+    invoice_tex = "{name}.tex".format(name=translate("invoice"))
+    invoice_pdf = "{name}.pdf".format(name=translate("invoice"))
     invoice_id = details["invoice_id"]
-    # invoice = HourlyInvoice()
-
     datestr = datetime.today().strftime(date)
+
+    def show_invoice():
+        log.debug("Opening pdf viewer")
+        os.chdir(directory)
+        subprocess.Popen(["evince", invoice_pdf])
+
+    def copy_invoice():
+        log.debug("Copying file to local directory")
+        os.chdir(directory)
+        subprocess.Popen(
+            ["cp", invoice_pdf, cwd + "/" + invoice_pdf[:-4] + "_" + datestr + ".pdf"]
+        )
+
+    if compiled:
+        show_invoice()
+        copy_invoice()
+        return
+
+    log.info("Using temp directory: " + directory)
 
     items_table = ""
     total_cost = 0
@@ -80,6 +113,8 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
 
     strings = load_yaml("strings.yaml")
 
+    log.debug("Creating jinja2 substitution environment")
+
     env = jinja2.Environment(
         block_start_string="\BLOCK{",
         block_end_string="}",
@@ -97,125 +132,23 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
     env.filters["formatdigit"] = format_digit
     env.filters["t"] = translate
 
-    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))[:12]  # str(invoice.id)
-    if not os.path.exists(directory):
-        os.mkdir(directory)
-
-    print(directory)
-    invoice_tex = "{name}.tex".format(name=translate("invoice"))
-    invoice_pdf = "{name}.pdf".format(name=translate("invoice"))
-
     with open(directory + "/" + invoice_tex, "w") as fh:
+        log.debug("Writing templated TeX file")
         template = env.get_template("template.tex")
         fh.write(template.render(section1="Long Form", section2="Short Form", **data))
 
     cwd = os.getcwd()
     os.chdir(directory)
 
-    for _ in range(2):
+    for i in range(2):
+        log.debug("Compile LaTeX, round {}".format(i + 1))
         try:
             subprocess.check_call(["pdflatex", "-interaction=batchmode", invoice_tex])
         except subprocess.CalledProcessError:
             pass
-        # remove_tmp_files(translate("invoice"))
-    # subprocess.check_call(['evince', invoice_pdf])
-    subprocess.Popen(["evince", invoice_pdf])
-    subprocess.Popen(
-        ["cp", invoice_pdf, cwd + "/" + invoice_pdf[:-4] + "_" + datestr + ".pdf"]
-    )
 
-    # originally:
-    # invoice.locale = "de"
-    # invoice.id
-    # invoice.title
-    # invoice.recipient
-    # invoice.description
-    # invoice.range  # timeframe
-    # invoice.price  # calculate
-    # invoice.hours
-    # invoice.minutes
-    # invoice.per_hour  # hourly rate
-    # invoice.mode = "hourly"
-    # invoice.date = date
-
-    # save_yaml(vars(invoice), directory + "/data.yaml")
-    # save_yaml(config, "config.yaml")
-
-
-def compile_invoice(id):
-    pass
-    # directory = invoice_dir + "/" + str(id)
-    # if os.path.exists(directory + "/locked"):
-    #     print("The invoice has already been locked")
-    #     exit()
-    # invoicedata = load_yaml(directory + "/data.yaml")
-    # mode = invoicedata["mode"]
-    # del invoicedata["mode"]
-    # if mode == "single":
-    #     invoice = SingleInvoice(**invoicedata)
-    # elif mode == "hourly":
-    #     invoice = HourlyInvoice(**invoicedata)
-    # else:
-    #     invoice = Invoice(**invoicedata)
-    # env = jinja2.Environment(
-    #     block_start_string='\BLOCK{',
-    #     block_end_string='}',
-    #     variable_start_string='\VAR{',
-    #     variable_end_string='}',
-    #     comment_start_string='\#{',
-    #     comment_end_string='}',
-    #     line_statement_prefix='%#',
-    #     line_comment_prefix='%%',
-    #     trim_blocks=True,
-    #     autoescape=False,
-    #     loader=jinja2.FileSystemLoader(os.path.abspath('.'))
-    # )
-    # userdata = load_yaml("from.yaml")
-    # userdata["country"] = userdata["countryDE"] if invoice.locale == "de" else userdata["countryEN"]
-    # data = {
-    #     "user": userdata, # user
-    #     "to": load_yaml("recipients/{id}.yaml".format(id=invoice.recipient)), # client
-    #     "invoice": invoice,   # details
-    #     "config": config  # details
-    # }
-
-    # strings = load_yaml("strings.yaml")
-
-    # def translate(key):
-    #     if key in strings:
-    #         return strings[key][invoice.locale]
-    #     else:
-    #         print("Translation key for '{key}' is missing".format(key=key))
-    #         exit()
-
-    # def format_digit(integer):
-    #     integer = integer / 100
-    #     string = "{0:.2f}".format(integer)
-    #     if invoice.locale == "de":
-    #         string = string.replace(".", ",")
-    #     return string
-
-    # def format_date(date):
-    #     """
-
-    #     :type date: datetime.datetime
-    #     """
-    #     # if invoice.locale == "de":
-    #     #     return date.strftime("%d. %m. %Y")
-    #     # else:
-    #     return date.strftime("%Y-%m-%d")
-
-    # env.filters['formatdigit'] = format_digit
-    # env.filters['formatdate'] = format_date
-    # env.filters['t'] = translate
-    # with open(directory + "/{name}.tex".format(name=translate("invoice")), "w") as fh:
-    #     template = env.get_template('template.tex')
-    #     fh.write(template.render(section1='Long Form', section2='Short Form', **data))
-    # os.chdir(directory)
-    # for _ in range(2):
-    #     subprocess.check_call(['pdflatex', '-interaction=nonstopmode', '{name}.tex'.format(name=translate("invoice"))])
-    # print(directory)
-    # remove_tmp_files(translate("invoice"))
+    show_invoice()
+    copy_invoice()
 
 
 def sign_invoice(id):

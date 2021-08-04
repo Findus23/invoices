@@ -40,24 +40,24 @@ positional arguments:
 
 optional arguments:
   -h, --help         show this help message and exit
-  --locale LOCALE    what language the invoice should be in (default: de)
-  --user USER        your contact details and bank information. (default:
-                     self.yml)
+  --clean            ignore previous temporary files in build environment.
+                     (default: False)
   --clients CLIENTS  relative path (folder) in which information about your
-                     clients is stored in `<cname>.yml` files. (default:
-                     clients/)
+                     clients is stored in `<cname>.yml` files. (default: clients/)
+  --date DATE        datetime formatting string the invoice should be dated at.
+                     Can be a specific day like '2021-09-01'. Defaults to
+                     today. (default: %Y-%m-%d)
+  --locale LOCALE    what language the invoice should be in. Ignored if set in
+                     `details.yml` (default: de)
+  --user USER        your contact details and bank information. (default: self.yml)
   --validate         only validate available information and check available
-                     functionality, do not actually create invoice (default:
-                     False)
+                     functionality, do not actually create invoice (default: False)
   -v, --verbose      make logging output (more) verbose. Default (or 0) is
                      ERROR, -v is WARN, -vv is INFO and -vvv is DEBUG. Can be
                      passed multiple times. (default: 0)
   -y, --yes          do not ask for confirmation before creating the actual
                      invoice (default: False)
   --nocolor          deactivate colored log output (default: False)
-  --date DATE        date formatting string the invoice should be dated at.
-                     Can be a specific day like '2021-09-01'. Defaults to
-                     today. (default: %Y-%m-%d)
 ```
 
 # Config Files
