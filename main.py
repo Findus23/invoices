@@ -164,7 +164,16 @@ def main(**kwargs):
             print(str(item))
         print("\nDETAILS" + "-" * 28)
         for key, item in details.items():
-            print(key + ": " + str(item))
+            if key == "items":
+                print("items:")
+                for line in item:
+                    print(
+                        "- description: {description}\n  amount: {amount}\n  item_price_cents: {item_price_cents}".format(
+                            **line
+                        )
+                    )
+            else:
+                print(key + ": " + str(item))
         print("\nCLIENT" + "-" * 29)
         for key, item in client.items():
             print(str(item))

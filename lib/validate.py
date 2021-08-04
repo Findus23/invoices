@@ -4,8 +4,7 @@ log = logging.getLogger(__name__)
 
 
 def validate(d: dict, name: str, validation_func):
-    """Validate the given dictionary with its validation function.
-    """
+    """Validate the given dictionary with its validation function."""
     log.debug("Validating " + name.lower())
     try:
         validation_func(d)
@@ -14,6 +13,9 @@ def validate(d: dict, name: str, validation_func):
             "Field required but missing (in " + name.upper() + " file): " + str(e)
         )
         exit(1)
+    except ValueError as e:
+        log.critical("Wrong Type (in " + name.upper() + " file): " + str(e))
+        exit(1)
 
 
 def validate_client(client: dict):
@@ -21,10 +23,10 @@ def validate_client(client: dict):
     required) keys are present. Will throw an
     Exception if not.
     """
-    client["name"]
-    client["address"]
-    client["zip"]
-    client["city"]
+    str(client["name"])
+    str(client["address"])
+    int(client["zip"])
+    str(client["city"])
     # client["country"]
 
 
@@ -34,9 +36,9 @@ def validate_user(user: dict):
     Exception if not.
     """
     validate_client(user)
-    user["IBAN"]
-    user["BIC"]
-    user["bank"]
+    str(user["IBAN"])
+    str(user["BIC"])
+    str(user["bank"])
 
 
 def validate_details(details: dict):
@@ -45,27 +47,27 @@ def validate_details(details: dict):
     Exception if not.
     """
     details["client"]
-    details["title"]
-    details["invoice_id"]
-    details["timeframe"]
+    str(details["title"])
+    int(details["invoice_id"])
+    str(details["timeframe"])  # not just one value
     # 'hours_worked' or 'amount'
     # 'hourly_rate_cents' or 'item_price_cents'
     if details.get("items"):
         validate_items(details["items"])
     else:
-        details["description"]
-        validate_either(details, "amount", "hours_worked")
-        validate_either(details, "item_price_cents", "hourly_rate_cents")
+        str(details["description"])
+        int(validate_either(details, "amount", "hours_worked"))
+        int(validate_either(details, "item_price_cents", "hourly_rate_cents"))
 
 
 def validate_items(items: dict):
     for item in items:
-        item["amount"]
-        item["description"]
-        item["item_price_cents"]
+        str(item["description"])
+        int(item["amount"])
+        int(item["item_price_cents"])
 
 
 def validate_either(d: dict, k1, k2):
     if d.get(k1):
-        return
-    d[k2]
+        return d[k1]
+    return d[k2]

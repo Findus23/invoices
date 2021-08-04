@@ -64,9 +64,9 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
         total_cost = sum_items(details["items"])
         items_table = "".join(item_to_line(i) for i in details["items"])
     else:
-        total_cost = (
-            details.get("hours_worked") or details.get("amount")
-        ) * (details.get("hourly_rate_cents") or details.get("item_price_cents"))
+        total_cost = (details.get("hours_worked") or details.get("amount")) * (
+            details.get("hourly_rate_cents") or details.get("item_price_cents")
+        )
 
     data = {
         "user": userdata,
