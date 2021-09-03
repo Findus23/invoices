@@ -43,3 +43,6 @@ ustid:
 stid:
   de: SteuerNr
   en: tax number
+cont:
+  de: Fortsetzung
+  en: Continuation

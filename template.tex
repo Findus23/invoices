@@ -25,7 +25,10 @@
 \usepackage[left]{eurosym}
 \usepackage{booktabs}
 \usepackage{microtype}
-\usepackage{tabularx}
+
+% for tables across pages
+\usepackage[skip=1ex]{caption}
+\usepackage{xltabular}
 
 \usepackage{color}
 \definecolor{LightGray}{rgb}{0.7,0.7,0.7}
@@ -127,8 +130,19 @@
 % Amount | Unit | description ('Leistung') | price per unit | total
 
 \vspace{0.5cm}
-\begin{tabularx}{\textwidth}{Xrrr}
+\begin{xltabular}{\linewidth}{Xrrr}
+    % \caption{File endings (only for a demonstration \ldots)}\\\hline
     \VAR{"descr"|t} & \VAR{"amount"|t} & \VAR{"item_price"|t} & \VAR{"total"|t} \\ \midrule
+    \endfirsthead
+    \vspace{1em}
+    \multicolumn{2}{@{}l}{\ldots\ \small \VAR{"cont"|t}} \VAR{details.title}\\
+    \VAR{"descr"|t} & \VAR{"amount"|t} & \VAR{"item_price"|t} & \VAR{"total"|t} \\ \midrule
+    \endhead
+    \hline
+    \multicolumn{2}{r@{}}{\small \VAR{"cont"|t}\ldots}\\
+    \endfoot
+    \hline
+    \endlastfoot
 
     \BLOCK{ if items_table }
         \VAR{items_table}
@@ -142,21 +156,16 @@
     \midrule %\cmidrule{4-4}
 
     \BLOCK{ if details.mwst_percent }
-
         \vspace{0.5cm} \\
 
         \VAR{"net"|t} & & & \VAR{total_cost | formatdigit} \EUR \\
         \VAR{"plus"|t} \VAR{details.mwst_percent} \% MwSt. & & & \VAR{(total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
         \VAR{"total"|t} & & & \VAR{(total_cost + total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
 
-        \midrule
-
     \BLOCK{ else }
         & & & \VAR{total_cost | formatdigit } \EUR \\
     \BLOCK{ endif }
-
-\end{tabularx}
-
+\end{xltabular}
 
 \vspace{1cm}
 \noindent \VAR{"transfer"|t}:
