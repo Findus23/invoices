@@ -61,14 +61,36 @@
 
 \setkomavar{frombank}{\VAR{user.bank}\separ IBAN: \VAR{user.IBAN}\separ BIC: \VAR{user.BIC}}
 %TODO: Linie über
-\setkomavar{firstfoot}{\centering\color{Gray}\scriptsize\Name\separ\Address\separ\ZIP~\City\\
+\setkomavar{firstfoot}{
+    \centering
+    \color{Gray}\scriptsize
+    \begin{tabular}[t]{c@{}}
+    \Name\separ\Address\separ\ZIP~\City\\
     \BLOCK{ if user.ustid }
     \VAR{"ustid"|t}: \VAR{user.ustid} \\
     \BLOCK{ elif user.stid }
     \VAR{"stid"|t}: \VAR{user.stid} \\
     \BLOCK{ endif }
     \usekomavar{fromphone}\separ\usekomavar{fromemail}\separ\usekomavar{fromurl}\\\usekomavar{frombank} \\
+    \end{tabular}
     }
+% \setkomavar{nextfoot}{\usekomavar{firstfoot}}
+% from: https://tex.stackexchange.com/questions/426016/nexthead-and-nextfoot-problem-in-multi-page-letter-with-koma-and-srclttr2
+\usepackage{scrlayer-scrpage}% <- sets pagestyle scrheadings automatically
+\DeclareNewLayer[
+  foreground,
+  textarea,
+  voffset=\useplength{firstfootvpos},
+  hoffset=\dimexpr.5\paperwidth-.36\useplength{firstfootwidth}\relax,
+  width=\useplength{firstfootwidth},
+  mode=picture,
+  contents=\putUL{\raisebox{\dimexpr-\height}{\centering\usekomavar{firstfoot}}}
+]{likefirstpage.foot}
+
+\AddLayersToPageStyle{scrheadings}{likefirstpage.foot}
+\clearpairofpagestyles
+\chead*{\pagemark}
+
 
 \setkomavar{invoice}{\VAR{details.invoice_id}}
 \setkomavar{date}{\VAR{datestr}}
