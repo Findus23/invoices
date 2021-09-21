@@ -13,18 +13,18 @@ log = logging.getLogger(__name__)
 readline  # this does nothing but make sure the import readline is not removed accidently
 
 
-def load_yaml(filename):
+def load_yaml(filename, root="./"):
     name = ".".join(filename.split(".")[:-1])
     endings = [".yaml", ".yml"]
     err = None
     for end in endings:
         try:
-            with open(name + end, "r") as stream:
+            with open(root + name + end, "r") as stream:
                 return yaml.safe_load(stream)
         except FileNotFoundError as e:
             err = e
     log.critical(err)
-    log.error("Occured when attempting to load " + filename)
+    log.error("Occured when attempting to load '{}'".format(filename))
     exit(1)
 
 

@@ -41,6 +41,11 @@ def create_parser():
         help="datetime formatting string the invoice should be dated at. Can be a specific day like '2021-09-01'. Defaults to today.",
     )
     parser.add_argument(
+        "--directory",
+        default="./",
+        help="directory to expect USER, CLIENTS and DETAILS files in.",
+    )
+    parser.add_argument(
         "--locale",
         default="de",
         help="what language the invoice should be in. Ignored if set in `details.yml`",
@@ -131,10 +136,12 @@ def main(**kwargs):
     # get id
     # compile/sign
 
+    log.info("Using data directory [{}]".format(kwargs["directory"]))
+
     log.debug("Loading user")
-    user = load_yaml(kwargs["user"])
+    user = load_yaml(kwargs["user"], kwargs["directory"])
     log.debug("Loading details")
-    details = load_yaml(kwargs["DETAILS"])
+    details = load_yaml(kwargs["DETAILS"], kwargs["directory"])
 
     from lib.validate import validate, validate_user, validate_client, validate_details
 
@@ -145,11 +152,11 @@ def main(**kwargs):
     client_file = kwargs["clients"] + "/" + details["client"] + ".yml"
 
     # check if clients folder exists, load and validate
-    if not os.path.isdir(kwargs["clients"]):
+    if not os.path.isdir(kwargs["directory"] + kwargs["clients"]):
         log.critical("Client folder '" + kwargs["clients"] + "' does not exist.")
         exit(1)
 
-    client = load_yaml(client_file)
+    client = load_yaml(client_file, kwargs["directory"])
     validate(client, "client", validate_client)
 
     if kwargs["validate"]:
