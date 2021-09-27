@@ -15,7 +15,7 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
 
     compiled = False
     cwd = os.getcwd()
-    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"]))[:12]
+    directory = "/tmp/invoice-" + str(md5(kwargs["DETAILS"], kwargs["directory"]))[:12]
     if not os.path.exists(directory):
         log.debug("Creating new temp directory")
         os.mkdir(directory)
