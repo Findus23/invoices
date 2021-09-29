@@ -42,7 +42,12 @@ def create_invoice(details, userdata, client, date, locale, **kwargs):
     def item_to_line(item: dict) -> str:
         item["sum"] = format_digit(item["amount"] * item["item_price_cents"])
         item["item_price_cents"] = format_digit(item["item_price_cents"])
-        return "{description} & {amount} & {item_price_cents} & {sum} \\\\".format(
+        # strip away zeros after formatting, but only until ','.
+        # also strip away ',' if no decimal place is left.
+        item["amount"] = format_digit(item["amount"] * 100).rstrip("0").rstrip(",")
+        if not item.get("unit"):
+            item["unit"] = ""
+        return "{description} & {amount} {unit} & {item_price_cents} & {sum} \\\\".format(
             **item
         )
 

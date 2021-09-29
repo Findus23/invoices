@@ -56,14 +56,14 @@ def validate_details(details: dict):
         validate_items(details["items"])
     else:
         str(details["description"])
-        int(validate_either(details, "amount", "hours_worked"))
+        float(validate_either(details, "amount", "hours_worked"))
         int(validate_either(details, "item_price_cents", "hourly_rate_cents"))
 
 
 def validate_items(items: dict):
     for item in items:
         str(item["description"])
-        int(item["amount"])
+        float(item["amount"])
         int(item["item_price_cents"])
 
 

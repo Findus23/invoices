@@ -128,9 +128,10 @@ Specific information is in a file called `details.yaml`:
 | `timeframe`             | string    | Timeframe during which you accumulated the given number of hours. |
 | `client`                | string    | File-Selector (`cname`, before the `.yaml` from your `clients` folder) of your client for this project. |
 | `invoice_id`            | int       | Unique ID of this invoice. You need to ensure that this id is unique. |
-| `items`                 | list      | Optional. Entries must include `description`, `amount` and `item_price_cents`. |
+| `items`                 | list      | Optional. Entries must include `description`, `amount` and `item_price_cents`, can include `unit`. |
 | `description`           | string    | Optional. Description of the work you did. |
-| `hours_worked`/`amount` | int       | Optional. Number of hours you worked for the given timeframe and client. |
+| `hours_worked`/`amount` | int/float | Optional. Number of hours worked for the job. Can be point number with up to two decimal places. |
+| `unit`                  | string    | Optional. Only available in item-lists. Unit of the item, e.g. 'hours'/'h' or 'pieces'/'pcs'. |
 | `hourly_rate_cents`/`item_price_cents` | int       | Optional. The hourly rate you bill for in this invoice, in cents per hour. |
 | `mwst_percent`          | int       | Optional. If the (global) calculation should include MwSt, and the percentage. |
 | `locale`                | string    | Optional. `de` or `en`. Overrides `--locale`. Default: `de` |
@@ -156,13 +157,16 @@ client: <rname>
 invoice_id: <int>
 items:
   - description: <work description 1>
-    amount: <int>
+    amount: <int/float>
+    unit: h
     item_price_cents: <int>
-  - description: <work description 2>
-    amount: <int>
+  - description: <piece description 2>
+    amount: <int/float>
+    unit: pcs
     item_price_cents: <int>
 mwst_percent: 19
 ```
 
 Both styles can be combined, and the lower-level item is then placed first.
-It is not possible to specify individual mwst-rates.
+It is not possible to specify individual mwst-rates, but individual unit types
+can be specified.
