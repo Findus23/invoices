@@ -160,7 +160,7 @@
 
         \VAR{"net"|t} & & & \VAR{total_cost | formatdigit} \EUR \\
         \VAR{"plus"|t} \VAR{details.mwst_percent} \% MwSt. & & & \VAR{(total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
-        \VAR{"total"|t} & & & \VAR{(total_cost + total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
+        \VAR{"sum"|t} \VAR{"total"|t} & & & \VAR{(total_cost + total_cost * details.mwst_percent / 100) | formatdigit} \EUR \\
 
     \BLOCK{ else }
         & & & \VAR{total_cost | formatdigit } \EUR \\

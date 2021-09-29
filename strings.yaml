@@ -37,6 +37,9 @@ plus:
 total:
   de: Gesamtbetrag
   en: Total amount
+sum:
+  de: Summe
+  en: Sum
 ustid:
   de: USt-ID
   en: sales tax identification number
