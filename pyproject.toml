@@ -1,16 +1,16 @@
 [tool.poetry]
-name = "rechnungen"
-version = "0.3.0"
-description = ""
-authors = ["Lukas Winkler <git@lw1.at>", "Felix Karg <fkarg10@gmail.com>"]
+name = "invoices"
+version = "1.0.0"
+description = "script to help create invoices based on information from config files"
+authors = ["Lukas Winkler <git@lw1.at>", "Felix Karg <f.karg10@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 mypy = "^0.761"
 pyyaml = "^5.2"
 Jinja2 = "^2.10.3"
-dateparser = "^0.7.2"
 argparse = "^1.4.0"
+dateparser = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
