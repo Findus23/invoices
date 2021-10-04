@@ -5,6 +5,11 @@ to should be present as a file in `recipients/<rname>.yaml`, where `rname` is
 the selector. The specific information about this invoice should be in
 `config.yaml`.
 
+# More Features
+If you need more features than are available here, take a look at [this version
+from fkarg](https://github.com/fkarg/invoices).
+
+
 ## Your own information: from.yaml
 Have a file called `from.yaml` with your own information structured like this:
 
